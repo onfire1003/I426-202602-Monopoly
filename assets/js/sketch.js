@@ -1,40 +1,76 @@
 "use strict";
+// variables globales
+let pawns = [];
+let dices = [];
+
+// abougersur un autre fichier
+let wallet =[
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000,
+    1000
+];
+
+function preload() {
+    // load dice
+    dices = [
+        loadImage('/assets/images/dice_1.png'),
+        loadImage('/assets/images/dice_2.png'),
+        loadImage('/assets/images/dice_3.png'),
+        loadImage('/assets/images/dice_4.png'),
+        loadImage('/assets/images/dice_5.png'),
+        loadImage('/assets/images/dice_6.png')
+    ];
+
+    // load pawns
+    pawns = [
+        loadImage('/assets/images/pawn_0.png'),
+        loadImage('/assets/images/pawn_1.png'),
+        loadImage('/assets/images/pawn_2.png'),
+        loadImage('/assets/images/pawn_3.png'),
+        loadImage('/assets/images/pawn_4.png'),
+        loadImage('/assets/images/pawn_5.png'),
+        loadImage('/assets/images/pawn_6.png'),
+        loadImage('/assets/images/pawn_7.png')
+    ];
+}
+
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
     background('bisque');
 }
 
 function draw() {
-    // load image dice
-    const dice_1 = loadImage('/assets/images/dice_1.png');
-    const dice_2 = loadImage('/assets/images/dice_2.png');
-    const dice_3 = loadImage('/assets/images/dice_3.png');
-    const dice_4 = loadImage('/assets/images/dice_4.png');
-    const dice_5 = loadImage('/assets/images/dice_5.png');
-    const dice_6 = loadImage('/assets/images/dice_6.png');
+    angleMode(DEGREES);
 
-    // load image pawn
-    const pawn_0 = loadImage('/assets/images/pawn_0.png');
-    const pawn_1 = loadImage('/assets/images/pawn_1.png');
-    const pawn_2 = loadImage('/assets/images/pawn_2.png');
-    const pawn_3 = loadImage('/assets/images/pawn_3.png');
-    const pawn_4 = loadImage('/assets/images/pawn_4.png');
-    const pawn_5 = loadImage('/assets/images/pawn_5.png');
-    const pawn_6 = loadImage('/assets/images/pawn_6.png');
-    const pawn_7 = loadImage('/assets/images/pawn_7.png');
-
-    const pawns = [pawn_0, pawn_1, pawn_2, pawn_3, pawn_4, pawn_5, pawn_6, pawn_7];
 
     //draw users zones
     for (let i = 0; i < 8; i++){
         //draw background players
         stroke('white');
         fill('#242424');
-        rect(75 , 75 + (i * 100), 750, 95);
+        rect(60 , 60 + (i * 95), 750, 80);
 
         //draw icon players
         noStroke();
-        image(pawns[i], 90, 75 + (i * 100), 75, 75);
+        image(pawns[i], 70, 78 + (i * 95), 45, 45);
+
+        //draw wallet players
+        textSize(32);
+        fill("white");
+
+        push();
+        translate(300, 93 + (i * 95));
+        rotate(180);
+        text('₩', 0, 0);
+        pop();
+
+        text(': '+wallet[i], 300, 115 + (i * 95))
     }
 
     //draw game board
@@ -120,6 +156,8 @@ function draw() {
         rect(1083, 137 +  (i * 75), 26, 71);
 
     }
+
+    image(dices[2], 1000, 1000, 100, 100);
 
 }
 

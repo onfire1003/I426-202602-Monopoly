@@ -4,29 +4,26 @@ function setup() {
     background('bisque');
 }
 
-function preload() {
+function draw() {
     // load image dice
-    dice_1 = loadImage('/assets/images/dice_1.png');
-    dice_2 = loadImage('/assets/images/dice_2.png');
-    dice_3 = loadImage('/assets/images/dice_3.png');
-    dice_4 = loadImage('/assets/images/dice_4.png');
-    dice_5 = loadImage('/assets/images/dice_5.png');
-    dice_6 = loadImage('/assets/images/dice_6.png');
+    const dice_1 = loadImage('/assets/images/dice_1.png');
+    const dice_2 = loadImage('/assets/images/dice_2.png');
+    const dice_3 = loadImage('/assets/images/dice_3.png');
+    const dice_4 = loadImage('/assets/images/dice_4.png');
+    const dice_5 = loadImage('/assets/images/dice_5.png');
+    const dice_6 = loadImage('/assets/images/dice_6.png');
 
     // load image pawn
-    pawn_0 = loadImage('/assets/images/pawn_0.png');
-    pawn_1 = loadImage('/assets/images/pawn_1.png');
-    pawn_2 = loadImage('/assets/images/pawn_2.png');
-    pawn_3 = loadImage('/assets/images/pawn_3.png');
-    pawn_4 = loadImage('/assets/images/pawn_4.png');
-    pawn_5 = loadImage('/assets/images/pawn_5.png');
-    pawn_6 = loadImage('/assets/images/pawn_6.png');
-    pawn_7 = loadImage('/assets/images/pawn_7.png');
+    const pawn_0 = loadImage('/assets/images/pawn_0.png');
+    const pawn_1 = loadImage('/assets/images/pawn_1.png');
+    const pawn_2 = loadImage('/assets/images/pawn_2.png');
+    const pawn_3 = loadImage('/assets/images/pawn_3.png');
+    const pawn_4 = loadImage('/assets/images/pawn_4.png');
+    const pawn_5 = loadImage('/assets/images/pawn_5.png');
+    const pawn_6 = loadImage('/assets/images/pawn_6.png');
+    const pawn_7 = loadImage('/assets/images/pawn_7.png');
 
-    pawns = [pawn_0, pawn_1, pawn_2, pawn_3, pawn_4, pawn_5, pawn_6, pawn_7];
-}
-
-function draw() {
+    const pawns = [pawn_0, pawn_1, pawn_2, pawn_3, pawn_4, pawn_5, pawn_6, pawn_7];
 
     //draw users zones
     for (let i = 0; i < 8; i++){
@@ -37,7 +34,7 @@ function draw() {
 
         //draw icon players
         noStroke();
-        image(pawns[i], 90, 75 + (i * 100) + 10, 75, 75);
+        image(pawns[i], 90, 75 + (i * 100), 75, 75);
     }
 
     //draw game board
@@ -47,7 +44,7 @@ function draw() {
 
     noStroke();
     fill('#242424')
-        rect(width - widthRect - 35, height / 2 - heightRect / 2, widthRect, heightRect);
+    rect(width - widthRect - 35, height / 2 - heightRect / 2, widthRect, heightRect);
 
     //draw square
     // corner left top

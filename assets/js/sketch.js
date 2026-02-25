@@ -1,4 +1,39 @@
 "use strict";
+
+// fake gameboard for test
+const GameBoard = [
+    0, 1, 0, 1, 0, 0, 2, 0, 2, 2,
+    0, 3, 0, 3, 3, 0, 4, 0, 4, 4,
+    0, 5, 0, 5, 5, 0, 6, 6, 0, 6,
+    0, 7, 7, 0, 7, 0, 0, 8, 0, 8
+]
+
+const GameBoardPrice = [
+    0, 100, 0, 100, 0, 100, 100, 0, 100, 100,
+    0, 100, 100, 100, 100, 100, 100, 0, 100, 100,
+    0, 100, 0, 100, 100, 100, 100, 100, 100, 100,
+    0, 100, 100, 0, 100, 100, 0, 100, 0, 100,
+]
+
+const GameBoardName = [
+    "départ", "brown", "community", "brown", "taxe", "gare", "cyan", "chance", "cyan", "cyan",
+    "prison", "magenta", "entreprise\nd\'énergie", "magenta", "magenta", "gare", "orange", "community", "orange", "orange",
+    "parking\ngratuit", "red", "chance", "red", "red", "gare", "yellow", "yellow", "entreprise\nd\'eau", "yellow",
+    "aller en\nprison", "green", "green", "community", "green", "gare", "chance", "blue", "taxe", "blue",
+]
+
+const StreetsColors = {
+    1: "#8c3916",
+    2: "#b9f1fb",
+    3: "#f241a2",
+    4: "#f0a933",
+    5: "#de1c1c",
+    6: "#e8ee3a",
+    7: "#14a14a",
+    8: "#3982e4"
+}
+
+
 // variables globales
 let pawns = [];
 let dices = [];
@@ -112,7 +147,7 @@ function preload() {
     ];
 }
 
-// ---------------- SETUP ----------------
+
 function setup() {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES);
@@ -159,7 +194,6 @@ function setup() {
     }
 }
 
-// ---------------- DRAW ----------------
 function draw() {
     //draw users zones
     for (let i = 0; i < 8; i++) {
@@ -201,9 +235,6 @@ function draw() {
     fill('#242424');
     rect(1011, 36, 98, 98);
 
-
-
-
     //corner right top
     rect(1786, 36, 98, 98);
 
@@ -213,49 +244,135 @@ function draw() {
     //corner right bottom
     rect(1786, 811, 98, 98);
 
-    let color_top = ['#de1c1c', '#242424', '#de1c1c', '#de1c1c', '#242424', '#e8ee3a', '#e8ee3a', '#242424', '#e8ee3a'];
-    let color_right = ['#14a14a', '#14a14a', '#242424', '#14a14a', '#242424', '#242424', '#3982e4', '#242424', '#3982e4'];
-    let color_bottom = ['#b9f1fb', '#b9f1fb', '#242424', '#b9f1fb', '#242424', '#242424', '#8c3916', '#242424', '#8c3916'];
-    let color_left = ['#f0a933', '#f0a933', '#242424', '#f0a933', '#242424', '#f241a2', '#f241a2', '#242424', '#f241a2'];
-
     //square
     for (let i = 0; i < 9; i++) {
         fill('#242424');
 
         //square top
-        if (color_top[i] === '#242424') { stroke('white'); } else { stroke(color_top[i]); }
+        stroke('white')
         rect(1111 + (i * 75), 36, 73, 98);
 
         //square right
-        if (color_right[i] === '#242424') { stroke('white'); } else { stroke(color_right[i]); }
+        stroke('white')
         rect(1786, 136 + (i * 75), 98, 73);
 
         //square bottom
-        if (color_bottom[i] === '#242424') { stroke('white'); } else { stroke(color_bottom[i]); }
+        stroke('white')
         rect(1111 + (i * 75), 811, 73, 98);
 
         //square left
-        if (color_left[i] === '#242424') { stroke('white'); } else { stroke(color_left[i]); }
+        stroke('white')
         rect(1011, 136 + (i * 75), 98, 73);
 
         noStroke();
-        //street top color
-        fill(color_top[i]);
-        rect(1112 + (i * 75), 108, 71, 26);
 
-        //street right color
-        fill(color_right[i]);
-        rect(1787, 137 + (i * 75), 26, 71);
-
-        //street bottom color
-        fill(color_bottom[i]);
-        rect(1112 + (i * 75), 811, 71, 26);
-
-        //street left color
-        fill(color_left[i]);
-        rect(1083, 137 + (i * 75), 26, 71);
+        // put info on tiles
+        for (let i = 0; i < GameBoard.length; i++) {
+            // street colors
+            if (GameBoard[i] !== 0) {
+                // right
+                if (i > 30) {
+                    fill(StreetsColors[GameBoard[i]]);
+                    rect(1787, 62 + ((i - 30) * 75), 26, 71);
+                }
+                // top
+                else if (i > 20) {
+                    fill(StreetsColors[GameBoard[i]]);
+                    rect(1037 + ((i - 20) * 75), 108, 71, 26);
+                }
+                // left
+                else if (i > 10) {
+                    fill(StreetsColors[GameBoard[i]]);
+                    rect(1083, 812 + (-(i - 10) * 75), 26, 71);
+                }
+                // bottom
+                else {
+                    fill(StreetsColors[GameBoard[i]]);
+                    rect(1787 + (-i * 75), 811, 71, 26);
+                }
+            }
+            // price
+            textSize(16);
+            fill("white");
+            if (GameBoardPrice[i] !== 0) {
+                // right
+                if (i > 30) {
+                    push();
+                    translate(1868, 110 + ((i - 30) * 75));
+                    rotate(90);
+                    text('₩', 0, 0);
+                    pop();
+                    push();
+                    translate(1880, 105 + ((i - 30) * 75));
+                    rotate(-90);
+                    text(GameBoardPrice[i], 0, 0)
+                    pop();
+                }
+                // top
+                else if (i > 20) {
+                    text('₩', 1085 + ((i - 20) * 75), 52);
+                    push();
+                    translate(1080 + ((i - 20) * 75), 40);
+                    rotate(180);
+                    text(GameBoardPrice[i], 0, 0)
+                    pop();
+                }
+                // left
+                else if (i > 10) {
+                    push();
+                    translate(1028, 840 + (-(i - 10) * 75));
+                    rotate(-90);
+                    text('₩', 0, 0);
+                    pop();
+                    push();
+                    translate(1015, 845 + (-(i - 10) * 75));
+                    rotate(90);
+                    text(GameBoardPrice[i], 0, 0)
+                    pop();
+                }
+                // bottom
+                else {
+                    push();
+                    translate(1810 + (-i * 75), 892);
+                    rotate(180);
+                    text('₩', 0, 0);
+                    pop();
+                    text(GameBoardPrice[i], 1815 + (-i * 75), 905)
+                }
+            }
+            textSize(14);
+            textAlign(CENTER);
+            // right
+            if (i > 30) {
+                push();
+                translate(1850, 100 + ((i - 30) * 75));
+                rotate(-90);
+                text(GameBoardName[i], 0, 0)
+                pop();
+            }
+            // top
+            else if (i > 20) {
+                push();
+                translate(1075 + ((i - 20) * 75), 75);
+                rotate(180);
+                text(GameBoardName[i], 0, 0)
+                pop();
+            }
+            // left
+            else if (i > 10) {
+                push();
+                translate(1055, 850 + (-(i - 10) * 75));
+                rotate(90);
+                text(GameBoardName[i], 0, 0)
+                pop();
+            }
+            // bottom
+            else {
+                text(GameBoardName[i], 1822 + (-i * 75), 870)
+            }
+            textAlign(LEFT);
+        }
     }
-
 
     image(dices[2], 1325, 430, 100, 100);
     image(dices[2], 1475, 430, 100, 100);

@@ -8,6 +8,19 @@ const GameBoard = [
     0, 7, 7, 0, 7, 0, 0, 8, 0, 8
 ]
 
+const GameBoardPrice = [
+    0, 100, 0, 100, 0, 100, 100, 0, 100, 100,
+    0, 100, 100, 100, 100, 100, 100, 0, 100, 100,
+    0, 100, 0, 100, 100, 100, 100, 100, 100, 100,
+    0, 100, 100, 0, 100, 100, 0, 100, 0, 100,
+]
+
+const GameBoardName = [
+    "départ", "brown", "community", "brown", "taxe", "gare", "cyan", "chance", "cyan", "cyan",
+    "prison", "magenta", "entreprise\nd\'énergie", "magenta", "magenta", "gare", "orange", "community", "orange", "orange",
+    "parking\ngratuit", "red", "chance", "red", "red", "gare", "yellow", "yellow", "entreprise\nd\'eau", "yellow",
+    "aller en\nprison", "green", "green", "community", "green", "gare", "chance", "blue", "taxe", "blue",
+]
 
 const StreetsColors = {
     1: "#8c3916",
@@ -141,8 +154,9 @@ function draw() {
 
         noStroke();
 
-        // put streets colors based on a board list
+        // put info on tiles
         for (let i = 0; i < GameBoard.length; i++) {
+            // street colors
             if (GameBoard[i] !== 0) {
                 // right
                 if (i > 30) {
@@ -165,9 +179,88 @@ function draw() {
                     rect(1787 + (-i * 75), 811, 71, 26);
                 }
             }
+            // price
+            textSize(16);
+            fill("white");
+            if (GameBoardPrice[i] !== 0) {
+                // right
+                if (i > 30) {
+                    push();
+                    translate(1868, 110 + ((i - 30) * 75));
+                    rotate(90);
+                    text('₩', 0, 0);
+                    pop();
+                    push();
+                    translate(1880, 105 + ((i - 30) * 75));
+                    rotate(-90);
+                    text(GameBoardPrice[i], 0, 0)
+                    pop();
+                }
+                // top
+                else if (i > 20) {
+                    text('₩', 1085 + ((i - 20) * 75), 52);
+                    push();
+                    translate(1080 + ((i - 20) * 75), 40);
+                    rotate(180);
+                    text(GameBoardPrice[i], 0, 0)
+                    pop();
+                }
+                // left
+                else if (i > 10) {
+                    push();
+                    translate(1028, 840 + (-(i - 10) * 75));
+                    rotate(-90);
+                    text('₩', 0, 0);
+                    pop();
+                    push();
+                    translate(1015, 845 + (-(i - 10) * 75));
+                    rotate(90);
+                    text(GameBoardPrice[i], 0, 0)
+                    pop();
+                }
+                // bottom
+                else {
+                    push();
+                    translate(1810 + (-i * 75), 892);
+                    rotate(180);
+                    text('₩', 0, 0);
+                    pop();
+                    text(GameBoardPrice[i], 1815 + (-i * 75), 905)
+                }
+            }
+            textSize(14);
+            textAlign(CENTER);
+            // right
+            if (i > 30) {
+                push();
+                translate(1850, 100 + ((i - 30) * 75));
+                rotate(-90);
+                text(GameBoardName[i], 0, 0)
+                pop();
+            }
+            // top
+            else if (i > 20) {
+                push();
+                translate(1075 + ((i - 20) * 75), 75);
+                rotate(180);
+                text(GameBoardName[i], 0, 0)
+                pop();
+            }
+            // left
+            else if (i > 10) {
+                push();
+                translate(1055, 850 + (-(i - 10) * 75));
+                rotate(90);
+                text(GameBoardName[i], 0, 0)
+                pop();
+            }
+            // bottom
+            else {
+                text(GameBoardName[i], 1822 + (-i * 75), 870)
+            }
+            textAlign(LEFT);
         }
     }
-
     image(dices[2], 1000, 1000, 100, 100);
 
 }

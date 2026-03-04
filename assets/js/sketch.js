@@ -47,6 +47,8 @@ let wallet = [
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
 
+let n = window.nbPlayers || 0;
+
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
     const css = `
@@ -84,26 +86,9 @@ function inventoryPopup(id, message) {
     if (oldPopup) oldPopup.remove();
 
     let popupBg = createDiv('').id(`popup-${id}`);
-    popupBg.style('position', 'fixed');
-    popupBg.style('left', '0');
-    popupBg.style('top', '0');
-    popupBg.style('width', '100vw');
-    popupBg.style('height', '100vh');
-    popupBg.style('background', 'rgba(0,0,0,0.6)');
-    popupBg.style('display', 'flex');
-    popupBg.style('justify-content', 'center');
-    popupBg.style('align-items', 'center');
-    popupBg.style('backdrop-filter', 'blur(3px)');
-    popupBg.style('z-index', '999');
 
     let popup = createDiv('');
     popup.parent(popupBg);
-    popup.style('background', 'white');
-    popup.style('padding', '20px');
-    popup.style('width', '280px');
-    popup.style('border-radius', '10px');
-    popup.style('text-align', 'center');
-    popup.style('font-family', 'system-ui, sans-serif');
 
     let text = createP(message);
     text.parent(popup);
@@ -111,13 +96,6 @@ function inventoryPopup(id, message) {
 
     let closeBtn = createButton("Fermer");
     closeBtn.parent(popup);
-    closeBtn.style('margin-top', '10px');
-    closeBtn.style('padding', '8px 15px');
-    closeBtn.style('background', '#4F46E5');
-    closeBtn.style('color', 'white');
-    closeBtn.style('border', 'none');
-    closeBtn.style('border-radius', '6px');
-    closeBtn.style('cursor', 'pointer');
 
     closeBtn.mousePressed(() => popupBg.remove());
 }
@@ -154,50 +132,50 @@ function setup() {
     background('bisque');
 
     addGlobalButtonStyle()
+    let n = window.nbPlayers || 0;
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
-
-        // ouvre une popup différente par joueur
         inventory_btn.mousePressed(() => {
             inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
         });
 
-        // button zone action
-        // buttom menu
-        const menu_btn = createButton('Menu');
-        menu_btn.position(60, 850);
-
-        // buttom change
-        const change_btn = createButton('Echange');
-        change_btn.position(360, 850);
-
-        // buttom sell
-        const sell_btn = createButton('Vendre');
-        sell_btn.position(660, 850);
-
-        // button board game
-        // buttom roll
-        const roll_btn = createButton('Lancer les dés');
-        roll_btn.position(1170, 700);
-
-        // buttom get out off jail
-        const jail_btn = createButton('Sortir de prison');
-        jail_btn.position(1380, 700);
-
-        // buttom build
-        const build_btn = createButton('Construire');
-        build_btn.position(1590, 700);
-
+        // Store a reference
         inventoryBtns.push(inventory_btn);
     }
+    // button zone action
+    // buttom menu
+    const menu_btn = createButton('Menu');
+    menu_btn.position(60, 850);
+    menu_btn.mousePressed(openMenu);
+
+    // buttom change
+    const change_btn = createButton('Echange');
+    change_btn.position(360, 850);
+
+    // buttom sell
+    const sell_btn = createButton('Vendre');
+    sell_btn.position(660, 850);
+
+    // button board game
+    // buttom roll
+    const roll_btn = createButton('Lancer les dés');
+    roll_btn.position(1170, 700);
+
+    // buttom get out off jail
+    const jail_btn = createButton('Sortir de prison');
+    jail_btn.position(1380, 700);
+
+    // buttom build
+    const build_btn = createButton('Construire');
+    build_btn.position(1590, 700);
 }
 
 function draw() {
     //draw users zones
-    for (let i = 0; i < 8; i++) {
-        //draw background players
+    //draw background players
+    for (let i = 0; i < window.nbPlayers; i++) {
         stroke('white');
         fill('#242424');
         rect(60, 60 + (i * 95), 750, 80);

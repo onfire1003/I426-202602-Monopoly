@@ -5,4 +5,214 @@ body {
 
 canvas {
     display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+:root {
+    --overlay-bg: rgba(0,0,0,0.5); /* fond assombri */
+    --panel-bg: #242424;           /* couleur du panneau */
+    --panel-text: #fff;
+    --anim-dur: 400ms;
+}
+
+/* Reset basique */
+* { box-sizing: border-box; }
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.menu-section {
+    background: rgba(255,255,255,0.12);
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    backdrop-filter: blur(4px);
+}
+
+.menu-section h3 {
+    margin-top: 0;
+    font-size: 22px;
+    color: #fff;
+}
+
+label {
+    display: block;
+    color: #fff;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+input[type="number"],
+input[type="color"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+#btnStart,
+#btnApplyTheme {
+    width: 100%;
+    padding: 12px;
+    background: #2ecc71;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#btnStart:hover,
+#btnApplyTheme:hover {
+    background: #29b765;
+}
+.btn:active { transform: translateY(1px); }
+
+/* ========= OVERLAY + PANNEAU ========= */
+
+/* L’overlay couvre toute la fenêtre */
+.overlay {
+    position: fixed;
+    inset: 0; /* top:0 right:0 bottom:0 left:0 */
+    background: var(--overlay-bg);
+    display: none;         /* caché par défaut */
+    align-items: flex-end; /* on ancre le panneau en bas pour coulisser */
+    justify-content: center;
+    z-index: 1000;
+}
+.overlay.ouvert {
+    display: flex;
+}
+
+/* Le panneau plein écran (on peut choisir sa hauteur) */
+.panneau {
+    width: 100%;
+    height: 100vh;              /* plein écran */
+    max-width: 100vw;
+    background: var(--panel-bg);
+    color: var(--panel-text);
+
+    /* Animation de slide depuis le bas */
+    transform: translateY(100%);
+    transition: transform var(--anim-dur) ease;
+    will-change: transform;
+
+    /* Contenu interne */
+    padding: 24px;
+    overflow: auto; /* scroll interne si contenu long */
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* Quand l’overlay est ouvert, on remonte le panneau */
+.overlay.ouvert .panneau {
+    transform: translateY(0);
+}
+
+/* Wrapper that holds the centered content */
+.menu-center {
+    /* Limit width for nicer layout on big screens */
+    width: min(520px, 92vw);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Smaller title */
+.menu-title {
+    margin: 0 0 8px 0;
+    font-size: 24px;            /* smaller than before */
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.3px;
+}
+
+/* Section box (lighter, smaller paddings) */
+.menu-section {
+    background: rgba(255,255,255,0.10);
+    padding: 14px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+}
+
+/* Labels smaller and tighter */
+.menu-section label {
+    display: block;
+    color: #fff;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+/* Smaller input */
+.input-sm {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 15px;
+    outline: none;
+}
+
+/* Smaller button */
+.btn-sm {
+    width: 100%;
+    padding: 10px 12px;
+    background: #2ecc71;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .15s ease, background .2s ease;
+    margin-top: 10px;
+}
+.btn-sm:hover { background: #29b765; }
+.btn-sm:active { transform: translateY(1px); }
+
+/* Ensure overlay stays on top of p5 elements */
+.overlay { z-index: 999999 !important; }
+
+/* Optional: reduce title size further on small heights */
+@media (max-height: 600px) {
+    .menu-title { font-size: 20px; }
+}
+``
+/* Désactiver le scroll de la page derrière */
+body.no-scroll {
+    overflow: hidden;
+    touch-action: none;
+}
+
+/* Bouton de fermeture */
+.fermer {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+}
+
+/* Responsive petite hauteur */
+@media (max-height: 600px) {
+    .panneau { padding: 16px; }
 }

@@ -298,36 +298,46 @@ function draw() {
                 // right
                 if (i > 30) {
                     push();
-                    translate(1868, 110 + ((i - 30) * 75));
-                    rotate(90);
-                    text('₩', 0, 0);
+                    textAlign(LEFT);
+                    translate(1845, 128 + ((i - 30) * 75)); // 126 + 2
+                    rotate(0);
+                    text(GameBoardPrice[i], 0, 0);
                     pop();
                     push();
-                    translate(1880, 105 + ((i - 30) * 75));
-                    rotate(-90);
-                    text(GameBoardPrice[i], 0, 0)
+                    textAlign(LEFT);
+                    translate(1841, 116 + ((i - 30) * 75)); // 114 + 2
+                    rotate(180);
+                    text('₩', 0, 0);
                     pop();
                 }
                 // top
                 else if (i > 20) {
-                    text('₩', 1085 + ((i - 20) * 75), 52);
                     push();
-                    translate(1080 + ((i - 20) * 75), 40);
+                    textAlign(LEFT);
+                    translate(1068 + ((i - 20) * 75), 106); // 1060 + 8
+                    rotate(0);
+                    text(GameBoardPrice[i], 0, 0);
+                    pop();
+                    push();
+                    textAlign(LEFT);
+                    translate(1064 + ((i - 20) * 75), 94); // 1056 + 8
                     rotate(180);
-                    text(GameBoardPrice[i], 0, 0)
+                    text('₩', 0, 0);
                     pop();
                 }
                 // left
                 else if (i > 10) {
                     push();
-                    translate(1028, 840 + (-(i - 10) * 75));
-                    rotate(-90);
-                    text('₩', 0, 0);
+                    textAlign(LEFT);
+                    translate(1047, 876 + (-(i - 10) * 75)); // 1050 - 3
+                    rotate(0);
+                    text(GameBoardPrice[i], 0, 0);
                     pop();
                     push();
-                    translate(1015, 845 + (-(i - 10) * 75));
-                    rotate(90);
-                    text(GameBoardPrice[i], 0, 0)
+                    textAlign(LEFT);
+                    translate(1043, 864 + (-(i - 10) * 75)); // 1046 - 3
+                    rotate(180);
+                    text('₩', 0, 0);
                     pop();
                 }
                 // bottom
@@ -342,27 +352,34 @@ function draw() {
             }
             textSize(14);
             textAlign(CENTER);
+            // corners
+            if (i === 0 || i === 10 || i === 20 || i === 30) {
+                if (i === 0)  text(GameBoardName[i], 1835, 870);
+                if (i === 10) text(GameBoardName[i], 1060, 870);
+                if (i === 20) text(GameBoardName[i], 1060, 85);
+                if (i === 30) text(GameBoardName[i], 1835, 85);
+            }
             // right
-            if (i > 30) {
+            else if (i > 30) {
                 push();
-                translate(1850, 100 + ((i - 30) * 75));
-                rotate(-90);
+                translate(1845, 100 + ((i - 30) * 75));
+                rotate(0);
                 text(GameBoardName[i], 0, 0)
                 pop();
             }
             // top
             else if (i > 20) {
                 push();
-                translate(1075 + ((i - 20) * 75), 75);
-                rotate(180);
+                translate(1075 + ((i - 20) * 75), 69);
+                rotate(0);
                 text(GameBoardName[i], 0, 0)
                 pop();
             }
             // left
             else if (i > 10) {
                 push();
-                translate(1055, 850 + (-(i - 10) * 75));
-                rotate(90);
+                translate(1052, 840 + (-(i - 10) * 75));
+                rotate(0);
                 text(GameBoardName[i], 0, 0)
                 pop();
             }

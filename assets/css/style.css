@@ -191,7 +191,7 @@ input[type="color"] {
 @media (max-height: 600px) {
     .menu-title { font-size: 20px; }
 }
-``
+
 /* Désactiver le scroll de la page derrière */
 body.no-scroll {
     overflow: hidden;
@@ -215,4 +215,11 @@ body.no-scroll {
 /* Responsive petite hauteur */
 @media (max-height: 600px) {
     .panneau { padding: 16px; }
+}
+
+#nbPlayers:disabled,
+#btnStart:disabled {
+    opacity: 0.6;
+    filter: grayscale(0.2);
+    cursor: not-allowed !important;
 }

@@ -2,6 +2,61 @@
 const overlay = document.getElementById('overlay');
 const panneau = document.getElementById('panneau');
 const btnFermer = document.getElementById('fermer');
+const nbPlayersInput = document.getElementById("nbPlayers");
+const btnStart = document.getElementById("btnStart");
+
+// Optional small helper to toggle disabled state (and visuals)
+function lockPlayersUI(locked) {
+    // Disable/enable controls
+    nbPlayersInput.disabled = locked;
+    btnStart.disabled = locked;
+
+    // Visual cue (optional)
+    nbPlayersInput.style.opacity = locked ? '0.6' : '1';
+    btnStart.style.opacity = locked ? '0.6' : '1';
+    btnStart.style.cursor = locked ? 'not-allowed' : 'pointer';
+}
+
+// If already locked (menu reopened), reflect UI state
+if (window.playersLocked) {
+    if (typeof window.nbPlayers === 'number') {
+        nbPlayersInput.value = String(window.nbPlayers);
+    }
+    lockPlayersUI(true);
+}
+
+// Start Game click
+btnStart.addEventListener("click", () => {
+    // Do nothing if already locked
+    if (window.playersLocked) return;
+
+    // Parse and validate
+    const nb = parseInt(nbPlayersInput.value, 10);
+    if (isNaN(nb) || nb < 2 || nb > 8) {
+        alert("Number of players must be between 2 and 8.");
+        return;
+    }
+
+    // Expose globally for p5.js
+    window.nbPlayers = nb;
+
+    // 🔒 Lock permanently for this run
+    window.playersLocked = true;
+    lockPlayersUI(true);
+
+    // Close the overlay
+    fermerPanneau();
+});
+
+// Ensure UI stays locked every time the menu opens again
+const _openMenu = window.openMenu;
+window.openMenu = function () {
+    _openMenu?.();
+    if (window.playersLocked) {
+        nbPlayersInput.value = String(window.nbPlayers ?? nbPlayersInput.value);
+        lockPlayersUI(true);
+    }
+};
 
 // Defensive: ensure elements exist
 if (!overlay || !panneau || !btnFermer) {

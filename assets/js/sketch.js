@@ -8,12 +8,12 @@ const GameBoardName = game.board.map(tile => tile.name);
 
 
 const StreetsColors = {
-    "blue": "#8c3916",
-    "blue": "#b9f1fb",
-    "blue": "#f241a2",
-    "blue": "#f0a933",
-    "blue": "#de1c1c",
-    "blue": "#e8ee3a",
+    "brown": "#8c3916",
+    "cyan": "#b9f1fb",
+    "magenta": "#f241a2",
+    "orange": "#f0a933",
+    "red": "#de1c1c",
+    "yellow": "#e8ee3a",
     "green": "#14a14a",
     "blue": "#3982e4"
 // A FAIRE !!!
@@ -255,7 +255,7 @@ window.draw = function() {
         // put info on tiles
         for (let i = 0; i < GameBoard.length; i++) {
             // street colors
-            if (GameBoard[i] !== 0) {
+            if (StreetsColors[GameBoard[i]]) {
                 // right
                 if (i > 30) {
                     fill(StreetsColors[GameBoard[i]]);

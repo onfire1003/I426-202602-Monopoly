@@ -1,5 +1,7 @@
 "use strict";
 
+import Dice from "/assets/js/class/dice.js";
+
 // fake gameboard for test
 const GameBoard = [
     0, 1, 0, 1, 0, 0, 2, 0, 2, 2,
@@ -36,7 +38,11 @@ const StreetsColors = {
 
 // variables globales
 let pawns = [];
-let dices = [];
+let diceImages = [];
+
+// Objects
+let dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
+let dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
 
 // argent des joueurs
 let wallet = [
@@ -122,10 +128,18 @@ function inventoryPopup(id, message) {
     closeBtn.mousePressed(() => popupBg.remove());
 }
 
+function throwTheDices(dice_1, dice_2) {
+    dice_1.throwDice();
+    dice_2.throwDice();
+
+    image(dice_1.selectedImage, dice_1.position[0], dice_1.position[1], dice_1.position[2], dice_1.position[3]);
+    image(dice_2.selectedImage, dice_2.position[0], dice_2.position[1], dice_2.position[2], dice_2.position[3]);
+}
+
 // ---------------- ASSETS ----------------
 function preload() {
     // load dice
-    dices = [
+    diceImages = [
         loadImage('/assets/images/dice_1.png'),
         loadImage('/assets/images/dice_2.png'),
         loadImage('/assets/images/dice_3.png'),
@@ -181,6 +195,9 @@ function setup() {
         // buttom roll
         const roll_btn = createButton('Lancer les dés');
         roll_btn.position(1170, 700);
+        roll_btn.mousePressed(() => {
+            throwTheDices(dice_1, dice_2);
+        });
 
         // buttom get out off jail
         const jail_btn = createButton('Sortir de prison');
@@ -374,6 +391,6 @@ function draw() {
         }
     }
 
-    image(dices[2], 1325, 430, 100, 100);
-    image(dices[2], 1475, 430, 100, 100);
+    image(diceImages[2], 1325, 430, 100, 100);
+    image(diceImages[2], 1475, 430, 100, 100);
 }

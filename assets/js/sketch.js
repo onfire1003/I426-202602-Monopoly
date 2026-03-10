@@ -40,8 +40,8 @@ let dices = [];
 
 // argent des joueurs
 let wallet = [
-    1000, 1000, 1000, 1000,
-    1000, 1000, 1000, 1000
+    1500, 1500, 1500, 1500,
+    1500, 1500, 1500, 1500
 ];
 
 // on garde les références des boutons si besoin
@@ -156,7 +156,7 @@ function setup() {
     addGlobalButtonStyle()
 
     for (let i = 0; i < 8; i++) {
-        const inventory_btn = createButton('Inventaire');
+        const inv   entory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
 
         // ouvre une popup différente par joueur
@@ -192,6 +192,31 @@ function setup() {
 
         inventoryBtns.push(inventory_btn);
     }
+}
+
+/**
+ * Updates a player's balance.
+ * Returns true if successful, false otherwise.
+ */
+function updateWallet(playerIndex, amount) {
+    // Check if the player exists (index between 0 and 7)
+    if (wallet[playerIndex] === undefined) {
+      console.error("Error: This player doesn't exist!");
+      alert("Wait, we couldn't find that player in the game.");
+      return false;
+    }
+
+    // Check if player has enough money for the payment
+    if (wallet[playerIndex] + amount < 0) {
+      console.warn("Insufficient funds!");
+      alert("Sorry, you don't have enough money for this!");
+      return false;
+    }
+
+    // Apply transaction and update balance
+    wallet[playerIndex] += amount;
+    console.log("Success! Player " + (playerIndex + 1) + " updated.");
+    return true;
 }
 
 function draw() {

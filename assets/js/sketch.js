@@ -154,34 +154,40 @@ window.setup = function() {
         inventory_btn.mousePressed(() => {
             inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
         });
-}
-    // button zone action
-    // buttom menu
-    const menu_btn = createButton('Menu');
-    menu_btn.position(60, 850);
-    menu_btn.mousePressed(openMenu);
+        
+        // button zone action
+        // buttom menu
+        const menu_btn = createButton('Menu');
+        menu_btn.position(60, 850);
+        menu_btn.mousePressed(openMenu);
+    
+        // buttom change
+        const change_btn = createButton('Echange');
+        change_btn.position(360, 850);
+    
+        // buttom sell
+        const sell_btn = createButton('Vendre');
+        sell_btn.position(660, 850);
+    
+        // button board game
+        // buttom roll
+        const roll_btn = createButton('Lancer les dés');
+        roll_btn.position(1170, 700);
+        roll_btn.mousePressed(() => {
+            throwTheDices(dice_1, dice_2);
+        });
+    
+        // buttom get out off jail
+        const jail_btn = createButton('Sortir de prison');
+        jail_btn.position(1380, 700);
 
-    // buttom change
-    const change_btn = createButton('Echange');
-    change_btn.position(360, 850);
-
-    // buttom sell
-    const sell_btn = createButton('Vendre');
-    sell_btn.position(660, 850);
-
-    // button board game
-    // buttom roll
-    const roll_btn = createButton('Lancer les dés');
-    roll_btn.position(1170, 700);
-    roll_btn.mousePressed(() => {
-        throwTheDices(dice_1, dice_2);
-    });
-
-    // buttom get out off jail
-    const jail_btn = createButton('Sortir de prison');
-    jail_btn.position(1380, 700);
-    // Store a reference
-    inventoryBtns.push(inventory_btn);
+        // buttom build
+        const build_btn = createButton('Construire');
+        build_btn.position(1590, 700);
+        
+        // Store a reference
+        inventoryBtns.push(inventory_btn);
+    }
 }
 
 /**

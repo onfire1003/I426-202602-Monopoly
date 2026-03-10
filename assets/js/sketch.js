@@ -383,7 +383,7 @@ function draw() {
                 text(GameBoardName[i], 0, 0)
                 pop();
             }
-            // left
+            // left.
             else if (i > 10) {
                 push();
                 translate(1055, 850 + (-(i - 10) * 75));

@@ -156,7 +156,7 @@ function setup() {
     addGlobalButtonStyle()
 
     for (let i = 0; i < 8; i++) {
-        const inv   entory_btn = createButton('Inventaire');
+        const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
 
         // ouvre une popup différente par joueur

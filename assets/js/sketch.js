@@ -1,6 +1,6 @@
 "use strict";
 
-import Dice from "/assets/js/class/dice.js";
+import Dice from "./class/dice.js";
 
 // fake gameboard for test
 const GameBoard = [
@@ -41,8 +41,8 @@ let pawns = [];
 let diceImages = [];
 
 // Objects
-let dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
-let dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
+let dice_1;
+let dice_2;
 
 // argent des joueurs
 let wallet = [
@@ -131,13 +131,10 @@ function inventoryPopup(id, message) {
 function throwTheDices(dice_1, dice_2) {
     dice_1.throwDice();
     dice_2.throwDice();
-
-    image(dice_1.selectedImage, dice_1.position[0], dice_1.position[1], dice_1.position[2], dice_1.position[3]);
-    image(dice_2.selectedImage, dice_2.position[0], dice_2.position[1], dice_2.position[2], dice_2.position[3]);
 }
 
 // ---------------- ASSETS ----------------
-function preload() {
+window.preload = function() {
     // load dice
     diceImages = [
         loadImage('/assets/images/dice_1.png'),
@@ -162,10 +159,13 @@ function preload() {
 }
 
 
-function setup() {
+window.setup = function() {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES);
     background('bisque');
+
+    dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
+    dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
 
     addGlobalButtonStyle()
 
@@ -211,7 +211,7 @@ function setup() {
     }
 }
 
-function draw() {
+window.draw = function() {
     //draw users zones
     for (let i = 0; i < 8; i++) {
         //draw background players
@@ -391,6 +391,6 @@ function draw() {
         }
     }
 
-    image(diceImages[2], 1325, 430, 100, 100);
-    image(diceImages[2], 1475, 430, 100, 100);
+    dice_1.displayDice();
+    dice_2.displayDice();
 }

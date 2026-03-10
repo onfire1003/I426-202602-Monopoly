@@ -15,7 +15,7 @@
 export default class Dice {
     constructor(images, position) {
         this.value = 1;
-        this.images = images
+        this.images = images;
         this.selectedImage = this.images[0];
         this.position = position;
     }
@@ -26,34 +26,38 @@ export default class Dice {
 
     throwDice() {
         this.value = this.getRandomRoll(6);
-        this.displayDice(this.value);
+        this.selectDisplayDice(this.value);
     }
 
-    displayDice(value) {
+    selectDisplayDice(value) {
         switch (value) {
             case 1:
-                this.selectedImage = this.images[1];
+                this.selectedImage = this.images[0];
                 break;
 
             case 2:
-                this.selectedImage = this.images[2];
+                this.selectedImage = this.images[1];
                 break;
 
             case 3:
-                this.selectedImage = this.images[3];
+                this.selectedImage = this.images[2];
                 break;
 
             case 4:
-                this.selectedImage = this.images[4];
+                this.selectedImage = this.images[3];
                 break;
 
             case 5:
-                this.selectedImage = this.images[5];
+                this.selectedImage = this.images[4];
                 break;
 
             case 6:
-                this.selectedImage = this.images[6];
+                this.selectedImage = this.images[5];
                 break;
         }
+    }
+
+    displayDice() {
+        return image(this.selectedImage, this.position[0], this.position[1], this.position[2], this.position[3]);
     }
 }

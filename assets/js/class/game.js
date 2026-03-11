@@ -9,10 +9,12 @@ export default class Game {
         this.players = [];
         this.board = [];
 
+
         // game innit
         for (let i = 0; i < this.nb_player; i++) {
             this.players.push(new Player());
         }
+
 
         const TilesType = [
             "start", "brown", "community", "brown", "tax", "station", "cyan", "luck", "cyan", "cyan",
@@ -35,8 +37,25 @@ export default class Game {
             "aller en\nprison", "green", "green", "community", "green", "gare", "chance", "blue", "taxe", "blue",
         ]
 
-        for (let i = 0; i < this.board_size; i++) {
-            this.board.push(new Tile(TilesType[i], TilesPrice[i], TilesName[i]));
+        const TilesCoords = [];
+        for (let i = 0; i < 40; i++) {
+            if (i <= 9)
+                TilesCoords.push({ x: 1813 - (i * 75) - 8, y: 823 });
+            else if (i <= 20)
+                TilesCoords.push({ x: 1063 - 35, y: 820 - ((i - 10) * 75) });
+            else if (i <= 30)
+                TilesCoords.push({ x: 1063 + ((i - 20) * 75) - 6, y: 45 + 8 });
+            else
+                TilesCoords.push({ x: 1813, y: 70 + ((i - 30) * 75) });
         }
+
+
+        for (let i = 0; i < this.board_size; i++) {
+            this.board.push(new Tile(TilesType[i], TilesPrice[i], TilesName[i], null, TilesCoords[i]));
+        }
+    }
+
+    getPlayerPosition(playerIndex) {
+        return this.players[playerIndex].placement;
     }
 }

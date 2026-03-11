@@ -7,7 +7,6 @@ const GameBoard = game.board.map(tile => tile.type);
 const GameBoardPrice = game.board.map(tile => tile.price);
 const GameBoardName = game.board.map(tile => tile.name);
 
-console.log(game.players);
 
 const StreetsColors = {
     "brown": "#8c3916",
@@ -115,7 +114,14 @@ function throwTheDices(dice_1, dice_2) {
     dice_1.throwDice();
     dice_2.throwDice();
 }
-
+function getOffsetForPlayer(playerIndex) {
+    let sameCase = 0;
+    for (let j = 0; j < playerIndex; j++) {
+        if (game.players[j].placement === game.players[playerIndex].placement)
+            sameCase++;
+    }
+    return { x: (sameCase % 2) * 18, y: Math.floor(sameCase / 2) * 18 };
+}
 // ---------------- ASSETS ----------------
 window.preload = function() {
     // load dice
@@ -149,7 +155,6 @@ window.setup = function() {
 
     dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
     dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
-
     addGlobalButtonStyle()
     let n = window.nbPlayers || 0;
 
@@ -181,8 +186,21 @@ window.setup = function() {
     // buttom roll
     const roll_btn = createButton('Lancer les dés');
     roll_btn.position(1170, 700);
+    let currentPlayer = 0;
+
     roll_btn.mousePressed(() => {
+        const n = window.nbPlayers || 0;
+        if (n === 0) return;
+
         throwTheDices(dice_1, dice_2);
+
+        const steps = dice_1.value + dice_2.value;
+        game.players[currentPlayer].move(steps);
+
+        if (game.players[currentPlayer].placement === 30)
+            game.players[currentPlayer].putInPrison();
+
+        currentPlayer = (currentPlayer + 1) % n;
     });
 
     // buttom get out off jail
@@ -198,26 +216,7 @@ window.setup = function() {
  * Updates a player's balance.
  * Returns true if successful, false otherwise.
  */
-function updateWallet(playerIndex, amount) {
-    // Check if the player exists (index between 0 and 7)
-    if (wallet[playerIndex] === undefined) {
-      console.error("Error: This player doesn't exist!");
-      alert("Wait, we couldn't find that player in the game.");
-      return false;
-    }
 
-    // Check if player has enough money for the payment
-    if (wallet[playerIndex] + amount < 0) {
-      console.warn("Insufficient funds!");
-      alert("Sorry, you don't have enough money for this!");
-      return false;
-    }
-
-    // Apply transaction and update balance
-    wallet[playerIndex] += amount;
-    console.log("Success! Player " + (playerIndex + 1) + " updated.");
-    return true;
-}
 
 window.draw = function() {
     //draw users zones
@@ -418,4 +417,15 @@ window.draw = function() {
 
     dice_1.displayDice();
     dice_2.displayDice();
+    drawPawnsOnBoard();
+}
+
+// ↓ EN DEHORS de draw()
+function drawPawnsOnBoard() {
+    for (let i = 0; i < (window.nbPlayers || 0); i++) {
+        const coords = game.players[i].getTileCoords(game.board);
+        const offset = getOffsetForPlayer(i);
+        console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
+        image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
+    }
 }

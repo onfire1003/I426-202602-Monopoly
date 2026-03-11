@@ -1,5 +1,7 @@
 "use strict";
 
+import Dice from "./class/dice.js";
+
 // fake gameboard for test
 const GameBoard = [
     0, 1, 0, 1, 0, 0, 2, 0, 2, 2,
@@ -36,7 +38,11 @@ const StreetsColors = {
 
 // variables globales
 let pawns = [];
-let dices = [];
+let diceImages = [];
+
+// Objects
+let dice_1;
+let dice_2;
 
 // argent des joueurs
 let wallet = [
@@ -100,10 +106,15 @@ function inventoryPopup(id, message) {
     closeBtn.mousePressed(() => popupBg.remove());
 }
 
+function throwTheDices(dice_1, dice_2) {
+    dice_1.throwDice();
+    dice_2.throwDice();
+}
+
 // ---------------- ASSETS ----------------
-function preload() {
+window.preload = function() {
     // load dice
-    dices = [
+    diceImages = [
         loadImage('/assets/images/dice_1.png'),
         loadImage('/assets/images/dice_2.png'),
         loadImage('/assets/images/dice_3.png'),
@@ -126,10 +137,13 @@ function preload() {
 }
 
 
-function setup() {
+window.setup = function() {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES);
     background('bisque');
+
+    dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
+    dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
 
     addGlobalButtonStyle()
     let n = window.nbPlayers || 0;
@@ -137,13 +151,15 @@ function setup() {
     for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
+        inventory_btn.addClass('ui-btn');
+        inventory_btn.addClass('btn-inventory');
         inventory_btn.mousePressed(() => {
             inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
         });
-
-        // Store a reference
+         // Store a reference
         inventoryBtns.push(inventory_btn);
     }
+    
     // button zone action
     // buttom menu
     const menu_btn = createButton('Menu');
@@ -162,6 +178,9 @@ function setup() {
     // buttom roll
     const roll_btn = createButton('Lancer les dés');
     roll_btn.position(1170, 700);
+    roll_btn.mousePressed(() => {
+        throwTheDices(dice_1, dice_2);
+    });
 
     // buttom get out off jail
     const jail_btn = createButton('Sortir de prison');
@@ -197,7 +216,7 @@ function updateWallet(playerIndex, amount) {
     return true;
 }
 
-function draw() {
+window.draw = function() {
     //draw users zones
     //draw background players
     for (let i = 0; i < window.nbPlayers; i++) {
@@ -394,6 +413,6 @@ function draw() {
         }
     }
 
-    image(dices[2], 1325, 430, 100, 100);
-    image(dices[2], 1475, 430, 100, 100);
+    dice_1.displayDice();
+    dice_2.displayDice();
 }

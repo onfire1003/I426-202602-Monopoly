@@ -60,4 +60,17 @@ export default class Dice {
     displayDice() {
         return image(this.selectedImage, this.position[0], this.position[1], this.position[2], this.position[3]);
     }
+
+    rollDice(i) {
+        setTimeout(() => {
+            this.selectDisplayDice(this.getRandomRoll(6));
+            i--;
+            if (i > 0) this.rollDice(i);
+        }, 50);
+    }
+
+    resetDice() {
+        this.value = 1;
+        this.selectedImage = this.images[0];
+    }
 }

@@ -181,7 +181,7 @@ input[type="color"] {
     transition: transform .15s ease, background .2s ease;
     margin-top: 10px;
 }
-.btn-sm:hover { background: #29b765; }
+.btn-sm:hover { background:c; }
 .btn-sm:active { transform: translateY(1px); }
 
 /* Ensure overlay stays on top of p5 elements */
@@ -222,4 +222,64 @@ body.no-scroll {
     opacity: 0.6;
     filter: grayscale(0.2);
     cursor: not-allowed !important;
+}
+/* ---- Overlay sombre ---- */
+.inventory-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100000; /* devant le plateau */
+}
+
+/* ---- Fenêtre d’inventaire ---- */
+.inventory-popup {
+    background: #242424;
+    color: white;
+    padding: 22px;
+    width: min(420px, 92vw);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    animation: popup-appear 0.2s ease-out forwards;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Titre */
+.inventory-popup h2 {
+    margin: 0 0 12px 0;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* Contenu */
+.inventory-content {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.4;
+    opacity: 0.9;
+}
+
+/* Bouton fermer */
+.inventory-close {
+    margin-top: 18px;
+    width: 100%;
+    padding: 10px;
+    background: #29b765;
+    color: white;
+    border: 1px solid #29b765;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background .2s;
+}
+.inventory-close:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+/* Animation */
+@keyframes popup-appear {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
 }

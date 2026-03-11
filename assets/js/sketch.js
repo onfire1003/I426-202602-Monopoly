@@ -87,24 +87,48 @@ function addGlobalButtonStyle() {
 }
 
 // ---------------- fonction play button ----------------
-function inventoryPopup(id, message) {
-    let oldPopup = select(`#popup-${id}`);
-    if (oldPopup) oldPopup.remove();
+function inventoryPopup(id, title) {
+    // fermer si ouvert
+    const old = document.getElementById(`popup-${id}`);
+    if (old) old.remove();
 
-    let popupBg = createDiv('').id(`popup-${id}`);
+    // Overlay
+    const bg = createDiv('')
+        .id(`popup-${id}`)
+        .addClass('inventory-overlay');
 
-    let popup = createDiv('');
-    popup.parent(popupBg);
+    // Container panel
+    const popup = createDiv('').addClass('inventory-popup');
+    popup.parent(bg);
 
-    let text = createP(message);
-    text.parent(popup);
-    text.style('margin', '0 0 12px 0');
+    // Titre
+    const h = createElement('h2', title);
+    h.parent(popup);
 
-    let closeBtn = createButton("Fermer");
+    // Contenu exemple
+    const content = createDiv(`
+        <div class="inventory-content">
+            Inventaire vide pour le moment.
+        </div>
+    `);
+    content.parent(popup);
+
+    // Bouton fermer
+    const closeBtn = createButton('Fermer');
+    closeBtn.addClass('inventory-close');
     closeBtn.parent(popup);
 
-    closeBtn.mousePressed(() => popupBg.remove());
+    // Fermeture
+    closeBtn.mousePressed(() => bg.remove());
+
+    // Fermeture en cliquant hors du popup
+    bg.mousePressed((e) => {
+        if (e.target.classList.contains('inventory-overlay')) {
+            bg.remove();
+        }
+    });
 }
+``
 
 function throwTheDices(dice_1, dice_2) {
     dice_1.throwDice();
@@ -151,8 +175,6 @@ window.setup = function() {
     for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
-        inventory_btn.addClass('ui-btn');
-        inventory_btn.addClass('btn-inventory');
         inventory_btn.mousePressed(() => {
             inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
         });

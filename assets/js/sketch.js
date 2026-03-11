@@ -151,6 +151,8 @@ window.setup = function() {
     for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
+        inventory_btn.addClass('ui-btn');
+        inventory_btn.addClass('btn-inventory');
         inventory_btn.mousePressed(() => {
             inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
         });

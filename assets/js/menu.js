@@ -44,6 +44,8 @@ btnStart.addEventListener("click", () => {
     window.playersLocked = true;
     lockPlayersUI(true);
 
+    if (window.setup) window.setup();
+
     // Close the overlay
     fermerPanneau();
 });
@@ -97,16 +99,6 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay.classList.contains('ouvert')) {
         fermerPanneau();
     }
-});
-
-document.getElementById("btnStart").addEventListener("click", () => {
-    const nb = parseInt(document.getElementById("nbPlayers").value, 10);
-    if (nb < 2 || nb > 8) {
-        alert("Number of players must be between 2 and 8.");
-        return;
-    }
-    window.nbPlayers = nb;   // expose to sketch.js
-    fermerPanneau();         // close menu
 });
 
 // Close with the button

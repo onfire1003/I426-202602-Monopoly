@@ -2,13 +2,6 @@
 import Game from "./class/game.js";
 import Dice from "./class/dice.js";
 
-const game = new Game(8);
-const GameBoard = game.board.map(tile => tile.type);
-const GameBoardPrice = game.board.map(tile => tile.price);
-const GameBoardName = game.board.map(tile => tile.name);
-
-console.log(game.players);
-
 const StreetsColors = {
     "brown": "#8c3916",
     "cyan": "#b9f1fb",
@@ -33,8 +26,6 @@ let dice_2;
 
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
-
-let n = window.nbPlayers || 0;
 
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
@@ -151,7 +142,7 @@ window.setup = function() {
     dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
 
     addGlobalButtonStyle()
-    let n = window.nbPlayers || 0;
+    let n = window.game.nb_player || 0;
 
     for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
@@ -222,7 +213,7 @@ function updateWallet(playerIndex, amount) {
 window.draw = function() {
     //draw users zones
     //draw background players
-    for (let i = 0; i < window.nbPlayers; i++) {
+    for (let i = 0; i < (window.game.nb_player); i++) {
         stroke('white');
         fill('#242424');
         rect(60, 60 + (i * 95), 750, 80);
@@ -292,41 +283,41 @@ window.draw = function() {
         noStroke();
 
         // put info on tiles
-        for (let i = 0; i < GameBoard.length; i++) {
+        for (let i = 0; i < window.game.board_size; i++) {
             // street colors
-            if (StreetsColors[GameBoard[i]]) {
+            if (StreetsColors[window.game.board[i].type]) {
                 // right
                 if (i > 30) {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1787, 62 + ((i - 30) * 75), 26, 71);
                 }
                 // top
                 else if (i > 20) {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1037 + ((i - 20) * 75), 108, 71, 26);
                 }
                 // left
                 else if (i > 10) {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1083, 812 + (-(i - 10) * 75), 26, 71);
                 }
                 // bottom
                 else {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1787 + (-i * 75), 811, 71, 26);
                 }
             }
             // price
             textSize(16);
             fill("white");
-            if (GameBoardPrice[i] !== 0) {
+            if (window.game.board[i].price !== 0) {
                 // right
                 if (i > 30) {
                     push();
                     textAlign(LEFT);
                     translate(1845, 128 + ((i - 30) * 75)); // 126 + 2
                     rotate(0);
-                    text(GameBoardPrice[i], 0, 0);
+                    text(window.game.board[i].price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -341,7 +332,7 @@ window.draw = function() {
                     textAlign(LEFT);
                     translate(1068 + ((i - 20) * 75), 106); // 1060 + 8
                     rotate(0);
-                    text(GameBoardPrice[i], 0, 0);
+                    text(window.game.board[i].price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -356,7 +347,7 @@ window.draw = function() {
                     textAlign(LEFT);
                     translate(1047, 876 + (-(i - 10) * 75)); // 1050 - 3
                     rotate(0);
-                    text(GameBoardPrice[i], 0, 0);
+                    text(window.game.board[i].price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -372,24 +363,24 @@ window.draw = function() {
                     rotate(180);
                     text('₩', 0, 0);
                     pop();
-                    text(GameBoardPrice[i], 1815 + (-i * 75), 905)
+                    text(window.game.board[i].price, 1815 + (-i * 75), 905)
                 }
             }
             textSize(14);
             textAlign(CENTER);
             // corners
             if (i === 0 || i === 10 || i === 20 || i === 30) {
-                if (i === 0)  text(GameBoardName[i], 1835, 870);
-                if (i === 10) text(GameBoardName[i], 1060, 870);
-                if (i === 20) text(GameBoardName[i], 1060, 85);
-                if (i === 30) text(GameBoardName[i], 1835, 85);
+                if (i === 0)  text(window.game.board[i].name, 1835, 870);
+                if (i === 10) text(window.game.board[i].name, 1060, 870);
+                if (i === 20) text(window.game.board[i].name, 1060, 85);
+                if (i === 30) text(window.game.board[i].name, 1835, 85);
             }
             // right
             else if (i > 30) {
                 push();
                 translate(1845, 100 + ((i - 30) * 75));
                 rotate(0);
-                text(GameBoardName[i], 0, 0)
+                text(window.game.board[i].name, 0, 0)
                 pop();
             }
             // top
@@ -397,7 +388,7 @@ window.draw = function() {
                 push();
                 translate(1075 + ((i - 20) * 75), 69);
                 rotate(0);
-                text(GameBoardName[i], 0, 0)
+                text(window.game.board[i].name, 0, 0)
                 pop();
             }
             // left.
@@ -405,12 +396,12 @@ window.draw = function() {
                 push();
                 translate(1052, 840 + (-(i - 10) * 75));
                 rotate(0);
-                text(GameBoardName[i], 0, 0)
+                text(window.game.board[i].name, 0, 0)
                 pop();
             }
             // bottom
             else {
-                text(GameBoardName[i], 1822 + (-i * 75), 870)
+                text(window.game.board[i].name, 1822 + (-i * 75), 870)
             }
             textAlign(LEFT);
         }

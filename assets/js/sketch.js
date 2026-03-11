@@ -2,13 +2,14 @@
 import Game from "./class/game.js";
 
 const game = new Game(8);
+window.game = game;
+window.movePlayer = movePlayer;     // <--- AJOUTE ÇA
+window.updateWallet = updateWallet;
 const GameBoard = game.board.map(tile => tile.type);
 const GameBoardPrice = game.board.map(tile => tile.price);
 const GameBoardName = game.board.map(tile => tile.name);
 
 console.log(game.players);
-
-
 
 const StreetsColors = {
     "brown": "#8c3916",
@@ -22,13 +23,11 @@ const StreetsColors = {
 // A FAIRE !!!
 }
 
-
-// variables globales
+// global variables
 let pawns = [];
 let dices = [];
 
-
-// on garde les références des boutons si besoin
+// keep button references if needed
 let inventoryBtns = [];
 
 // ---------------- Style ----------------
@@ -62,7 +61,7 @@ function addGlobalButtonStyle() {
     styleTag.parent(document.head);
 }
 
-// ---------------- fonction play button ----------------
+// ---------------- play button function ----------------
 function inventoryPopup(id, message) {
     let oldPopup = select(`#popup-${id}`);
     if (oldPopup) oldPopup.remove();
@@ -131,7 +130,6 @@ window.preload = function() {
     ];
 }
 
-
 window.setup = function() {
     createCanvas(windowWidth, windowHeight);
     angleMode(DEGREES);
@@ -143,34 +141,34 @@ window.setup = function() {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
 
-        // ouvre une popup différente par joueur
+        // opens a different popup per player
         inventory_btn.mousePressed(() => {
             inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
         });
 
         // button zone action
-        // buttom menu
+        // button menu
         const menu_btn = createButton('Menu');
         menu_btn.position(60, 850);
 
-        // buttom change
+        // button change
         const change_btn = createButton('Echange');
         change_btn.position(360, 850);
 
-        // buttom sell
+        // button sell
         const sell_btn = createButton('Vendre');
         sell_btn.position(660, 850);
 
         // button board game
-        // buttom roll
+        // button roll
         const roll_btn = createButton('Lancer les dés');
         roll_btn.position(1170, 700);
 
-        // buttom get out off jail
+        // button get out off jail
         const jail_btn = createButton('Sortir de prison');
         jail_btn.position(1380, 700);
 
-        // buttom build
+        // button build
         const build_btn = createButton('Construire');
         build_btn.position(1590, 700);
 
@@ -360,4 +358,53 @@ window.draw = function() {
 
     image(dices[2], 1325, 430, 100, 100);
     image(dices[2], 1475, 430, 100, 100);
+}
+
+// ---------------- Banking & Movement Logic ----------------
+
+/**
+ * Updates a player's wallet balance
+ * @param {number} playerIndex - Index of the player (0 to 7)
+ * @param {number} amount - Amount to add (positive) or subtract (negative)
+ */
+function updateWallet(playerIndex, amount) {
+    const player = game.players[playerIndex];
+
+    if (!player) {
+        console.error("Player index not found.");
+        return false;
+    }
+
+    // Check for insufficient funds
+    if (player.money + amount < 0) {
+        console.warn("Insufficient funds for player " + (playerIndex + 1));
+        return false;
+    }
+
+    // Apply transaction
+    player.money += amount;
+    return true;
+}
+
+/**
+ * Moves player and rewards 200 if passing through the GO tile (index 0)
+ * @param {number} playerIndex - Index of the player moving
+ * @param {number} diceRoll - Total value of the dice roll
+ */
+function movePlayer(playerIndex, diceRoll) {
+    const player = game.players[playerIndex];
+
+    // Ensure position exists
+    if (player.position === undefined) player.position = 0;
+
+    const oldPos = player.position;
+    const newPos = (oldPos + diceRoll) % 40;
+
+    // If new position is lower than old position, player passed GO
+    if (newPos < oldPos) {
+        console.log("Passed GO! Player " + (playerIndex + 1) + " receives 200₩");
+        updateWallet(playerIndex, 200);
+    }
+
+    player.position = newPos;
 }

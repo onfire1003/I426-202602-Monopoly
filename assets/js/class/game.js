@@ -38,5 +38,11 @@ export default class Game {
         for (let i = 0; i < this.board_size; i++) {
             this.board.push(new Tile(TilesType[i], TilesPrice[i], TilesName[i]));
         }
+
+    }
+    removePlayer(player_index) {
+        if (this.players[player_index].playerEliminated()) {
+            this.players.splice(this.players.indexOf(player_index), 1);
+        }
     }
 }

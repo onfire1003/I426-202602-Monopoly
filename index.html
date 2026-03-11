@@ -1,14 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Monopoly</title>
-        <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
-        <link rel="stylesheet" href="assets/css/style.css">
-    </head>
-    <body>
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Monopoly</title>
+           <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+            <link rel="stylesheet" href="assets/css/style.css">
+        </head>
+        <body>
+            <!-- Overlay opened by default --><!--
+                    <div class="poignee" aria-hidden="true"></div>-->
+            <div id="overlay" class="overlay ouvert" aria-hidden="false">
+                <div id="panneau" class="panneau" role="dialog" aria-modal="true" aria-labelledby="titre" tabindex="-1">
+                    <button id="fermer" class="fermer" aria-label="Fermer">×</button>
+                    <div class="poignee" aria-hidden="true"></div>
+                    <!-- Centered container -->
+                    <div class="menu-center">
+                        <h2 id="titre" class="menu-title">Monopoly – Menu</h2>
+                        <section class="menu-section menu-start">
+                            <label for="nbPlayers">Number of players</label>
+                            <input type="number" id="nbPlayers" min="2" max="8" value="4" class="input-sm">
+                            <button id="btnStart" class="btn-sm">Start Game</button>
+                        </section>
+                    </div>
+                </div>
+            </div>
 
-        <!--JS-->
-        <script type = "module" src="assets/js/sketch.js"></script>
-    </body>
-</html>
+
+            <!-- playBoard -->
+            <script type="module" src="assets/js/sketch.js"></script>
+            <!-- App logic -->
+            <script type="module" src="assets/js/menu.js"></script>
+
+        </body>
+    </html>

@@ -10,11 +10,12 @@ export default class Player {
      * @param {Array} inventory - Items owned by the player
      * @param {boolean} in_prison - Whether the player is in prison
      */
-    constructor(placement = 0, money = 1500, inventory = [], in_prison = false) {
+    constructor(placement = 0, money = 1500, inventory = [], in_prison = false, in_bankrupt = false) {
         this.placement = placement;      // Current board position
         this.money = money;            // Player's money balance
         this.inventory = inventory;      // Owned items/properties
         this.in_prison = in_prison;   // Prison status
+        this.bankrupt = in_bankrupt;  // bankrupt status
     }
 
     /**
@@ -80,5 +81,17 @@ export default class Player {
      */
     releaseFromPrison() {
         this.in_prison = false;
+    }
+
+    /**
+     *
+     * */
+    playerEliminated(){
+        if (this.money === 0 && this.inventory.length === 0){
+            this.in_bankrupt = true;
+            return true;
+        }else{
+            return false;
+        }
     }
 }

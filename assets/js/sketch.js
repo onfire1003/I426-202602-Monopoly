@@ -1,10 +1,13 @@
 "use strict";
 import Game from "./class/game.js";
 
-const game = new Game(4);
+const game = new Game(8);
 const GameBoard = game.board.map(tile => tile.type);
 const GameBoardPrice = game.board.map(tile => tile.price);
 const GameBoardName = game.board.map(tile => tile.name);
+
+console.log(game.players);
+
 
 
 const StreetsColors = {
@@ -24,11 +27,6 @@ const StreetsColors = {
 let pawns = [];
 let dices = [];
 
-// argent des joueurs
-let wallet = [
-    1000, 1000, 1000, 1000,
-    1000, 1000, 1000, 1000
-];
 
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
@@ -202,7 +200,7 @@ window.draw = function() {
         text('₩', 0, 0);
         pop();
 
-        text(': ' + wallet[i], 300, 115 + (i * 95));
+        text(': ' + game.players[i].money, 300, 115 + (i * 95));
     }
 
     triangle(120, 100, 150, 90, 150, 110);

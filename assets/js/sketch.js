@@ -111,9 +111,19 @@ function inventoryPopup(id, title) {
 }
 ``
 
-function throwTheDices(dice_1, dice_2) {
-    dice_1.throwDice();
-    dice_2.throwDice();
+async function throwTheDices(dice_1, dice_2) {
+    await rollTheDices(dice_1, dice_2);
+
+    await dice_1.throwDice();
+    await dice_2.throwDice();
+
+    let result = dice_1.value + dice_2.value;
+    // TODO game.players[currentPlayer].move(result);
+}
+
+async function rollTheDices(dice_1, dice_2) {
+    dice_1.rollDice(20);
+    dice_2.rollDice(20);
 }
 
 // ---------------- ASSETS ----------------
@@ -183,6 +193,16 @@ window.setup = function() {
     roll_btn.position(1170, 700);
     roll_btn.mousePressed(() => {
         throwTheDices(dice_1, dice_2);
+    });
+
+    // button end turn
+    const turn_btn = createButton('Fin du tour');
+    // TODO handle tun_btn position and display depending on when turn ends
+    turn_btn.position(-100, -100);
+    turn_btn.mousePressed(() => {
+       dice_1.resetDice();
+       dice_2.resetDice();
+       // TODO change the player's turn
     });
 
     // buttom get out off jail

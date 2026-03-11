@@ -273,7 +273,7 @@ window.draw = function() {
                     rect(1787 + (-i * 75), 811, 71, 26);
                 }
             }
-            // price
+            // prices
             textSize(16);
             fill("white");
             if (GameBoardPrice[i] !== 0) {

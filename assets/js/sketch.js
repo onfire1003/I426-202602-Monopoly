@@ -1,38 +1,24 @@
 "use strict";
-
+import Game from "./class/game.js";
 import Dice from "./class/dice.js";
 
-// fake gameboard for test
-const GameBoard = [
-    0, 1, 0, 1, 0, 0, 2, 0, 2, 2,
-    0, 3, 0, 3, 3, 0, 4, 0, 4, 4,
-    0, 5, 0, 5, 5, 0, 6, 6, 0, 6,
-    0, 7, 7, 0, 7, 0, 0, 8, 0, 8
-]
+const game = new Game(8);
+const GameBoard = game.board.map(tile => tile.type);
+const GameBoardPrice = game.board.map(tile => tile.price);
+const GameBoardName = game.board.map(tile => tile.name);
 
-const GameBoardPrice = [
-    0, 100, 0, 100, 0, 100, 100, 0, 100, 100,
-    0, 100, 100, 100, 100, 100, 100, 0, 100, 100,
-    0, 100, 0, 100, 100, 100, 100, 100, 100, 100,
-    0, 100, 100, 0, 100, 100, 0, 100, 0, 100,
-]
-
-const GameBoardName = [
-    "départ", "brown", "community", "brown", "taxe", "gare", "cyan", "chance", "cyan", "cyan",
-    "prison", "magenta", "entreprise\nd\'énergie", "magenta", "magenta", "gare", "orange", "community", "orange", "orange",
-    "parking\ngratuit", "red", "chance", "red", "red", "gare", "yellow", "yellow", "entreprise\nd\'eau", "yellow",
-    "aller en\nprison", "green", "green", "community", "green", "gare", "chance", "blue", "taxe", "blue",
-]
+console.log(game.players);
 
 const StreetsColors = {
-    1: "#8c3916",
-    2: "#b9f1fb",
-    3: "#f241a2",
-    4: "#f0a933",
-    5: "#de1c1c",
-    6: "#e8ee3a",
-    7: "#14a14a",
-    8: "#3982e4"
+    "brown": "#8c3916",
+    "cyan": "#b9f1fb",
+    "magenta": "#f241a2",
+    "orange": "#f0a933",
+    "red": "#de1c1c",
+    "yellow": "#e8ee3a",
+    "green": "#14a14a",
+    "blue": "#3982e4"
+// A FAIRE !!!
 }
 
 
@@ -44,11 +30,6 @@ let diceImages = [];
 let dice_1;
 let dice_2;
 
-// argent des joueurs
-let wallet = [
-    1500, 1500, 1500, 1500,
-    1500, 1500, 1500, 1500
-];
 
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
@@ -260,7 +241,7 @@ window.draw = function() {
         text('₩', 0, 0);
         pop();
 
-        text(': ' + wallet[i], 300, 115 + (i * 95));
+        text(': ' + game.players[i].money, 300, 115 + (i * 95));
     }
 
     triangle(120, 100, 150, 90, 150, 110);
@@ -313,7 +294,7 @@ window.draw = function() {
         // put info on tiles
         for (let i = 0; i < GameBoard.length; i++) {
             // street colors
-            if (GameBoard[i] !== 0) {
+            if (StreetsColors[GameBoard[i]]) {
                 // right
                 if (i > 30) {
                     fill(StreetsColors[GameBoard[i]]);

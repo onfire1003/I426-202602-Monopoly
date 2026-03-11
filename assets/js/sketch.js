@@ -387,7 +387,7 @@ function updateWallet(playerIndex, amount) {
 }
 
 /**
- * Moves player and rewards 200 if passing through the GO tile (index 0).
+ * Moves player and rewards 200 if passing through the GO tile (index 0)
  * @param {number} playerIndex - Index of the player moving
  * @param {number} diceRoll - Total value of the dice roll
  */

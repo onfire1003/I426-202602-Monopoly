@@ -214,31 +214,6 @@ window.setup = function() {
     build_btn.position(1590, 700);
 }
 
-/**
- * Updates a player's balance.
- * Returns true if successful, false otherwise.
- */
-function updateWallet(playerIndex, amount) {
-    // Check if the player exists (index between 0 and 7)
-    if (wallet[playerIndex] === undefined) {
-      console.error("Error: This player doesn't exist!");
-      alert("Wait, we couldn't find that player in the game.");
-      return false;
-    }
-
-    // Check if player has enough money for the payment
-    if (wallet[playerIndex] + amount < 0) {
-      console.warn("Insufficient funds!");
-      alert("Sorry, you don't have enough money for this!");
-      return false;
-    }
-
-    // Apply transaction and update balance
-    wallet[playerIndex] += amount;
-    console.log("Success! Player " + (playerIndex + 1) + " updated.");
-    return true;
-}
-
 window.draw = function() {
     //draw users zones
     //draw background players

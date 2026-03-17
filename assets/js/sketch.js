@@ -1,5 +1,6 @@
 "use strict";
 import Game from "./class/game.js";
+import Dice from "./class/dice.js";
 
 const game = new Game(8);
 window.game = game;
@@ -25,10 +26,16 @@ const StreetsColors = {
 
 // global variables
 let pawns = [];
-let dices = [];
+let diceImages = [];
+
+// Objects
+let dice_1;
+let dice_2;
 
 // keep button references if needed
 let inventoryBtns = [];
+
+let n = window.nbPlayers || 0;
 
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
@@ -61,54 +68,69 @@ function addGlobalButtonStyle() {
     styleTag.parent(document.head);
 }
 
-// ---------------- play button function ----------------
-function inventoryPopup(id, message) {
-    let oldPopup = select(`#popup-${id}`);
-    if (oldPopup) oldPopup.remove();
+// ---------------- fonction play button ----------------
+function inventoryPopup(id, title) {
+    // fermer si ouvert
+    const old = document.getElementById(`popup-${id}`);
+    if (old) old.remove();
 
-    let popupBg = createDiv('').id(`popup-${id}`);
-    popupBg.style('position', 'fixed');
-    popupBg.style('left', '0');
-    popupBg.style('top', '0');
-    popupBg.style('width', '100vw');
-    popupBg.style('height', '100vh');
-    popupBg.style('background', 'rgba(0,0,0,0.6)');
-    popupBg.style('display', 'flex');
-    popupBg.style('justify-content', 'center');
-    popupBg.style('align-items', 'center');
-    popupBg.style('backdrop-filter', 'blur(3px)');
-    popupBg.style('z-index', '999');
+    // Overlay
+    const bg = createDiv('')
+        .id(`popup-${id}`)
+        .addClass('inventory-overlay');
 
-    let popup = createDiv('');
-    popup.parent(popupBg);
-    popup.style('background', 'white');
-    popup.style('padding', '20px');
-    popup.style('width', '280px');
-    popup.style('border-radius', '10px');
-    popup.style('text-align', 'center');
-    popup.style('font-family', 'system-ui, sans-serif');
+    // Container panel
+    const popup = createDiv('').addClass('inventory-popup');
+    popup.parent(bg);
 
-    let text = createP(message);
-    text.parent(popup);
-    text.style('margin', '0 0 12px 0');
+    // Titre
+    const h = createElement('h2', title);
+    h.parent(popup);
 
-    let closeBtn = createButton("Fermer");
+    // Contenu exemple
+    const content = createDiv(`
+        <div class="inventory-content">
+            Inventaire vide pour le moment.
+        </div>
+    `);
+    content.parent(popup);
+
+    // Bouton fermer
+    const closeBtn = createButton('Fermer');
+    closeBtn.addClass('inventory-close');
     closeBtn.parent(popup);
-    closeBtn.style('margin-top', '10px');
-    closeBtn.style('padding', '8px 15px');
-    closeBtn.style('background', '#4F46E5');
-    closeBtn.style('color', 'white');
-    closeBtn.style('border', 'none');
-    closeBtn.style('border-radius', '6px');
-    closeBtn.style('cursor', 'pointer');
 
-    closeBtn.mousePressed(() => popupBg.remove());
+    // Fermeture
+    closeBtn.mousePressed(() => bg.remove());
+
+    // Fermeture en cliquant hors du popup
+    bg.mousePressed((e) => {
+        if (e.target.classList.contains('inventory-overlay')) {
+            bg.remove();
+        }
+    });
+}
+``
+
+async function throwTheDices(dice_1, dice_2) {
+    await rollTheDices(dice_1, dice_2);
+
+    await dice_1.throwDice();
+    await dice_2.throwDice();
+
+    let result = dice_1.value + dice_2.value;
+    // TODO game.players[currentPlayer].move(result);
+}
+
+async function rollTheDices(dice_1, dice_2) {
+    dice_1.rollDice(20);
+    dice_2.rollDice(20);
 }
 
 // ---------------- ASSETS ----------------
 window.preload = function() {
     // load dice
-    dices = [
+    diceImages = [
         loadImage('/assets/images/dice_1.png'),
         loadImage('/assets/images/dice_2.png'),
         loadImage('/assets/images/dice_3.png'),
@@ -135,51 +157,92 @@ window.setup = function() {
     angleMode(DEGREES);
     background('bisque');
 
-    addGlobalButtonStyle()
+    dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
+    dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
 
-    for (let i = 0; i < 8; i++) {
+    addGlobalButtonStyle()
+    let n = window.nbPlayers || 0;
+
+    for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
-
-        // opens a different popup per player
         inventory_btn.mousePressed(() => {
             inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
         });
-
-        // button zone action
-        // button menu
-        const menu_btn = createButton('Menu');
-        menu_btn.position(60, 850);
-
-        // button change
-        const change_btn = createButton('Echange');
-        change_btn.position(360, 850);
-
-        // button sell
-        const sell_btn = createButton('Vendre');
-        sell_btn.position(660, 850);
-
-        // button board game
-        // button roll
-        const roll_btn = createButton('Lancer les dés');
-        roll_btn.position(1170, 700);
-
-        // button get out off jail
-        const jail_btn = createButton('Sortir de prison');
-        jail_btn.position(1380, 700);
-
-        // button build
-        const build_btn = createButton('Construire');
-        build_btn.position(1590, 700);
-
+         // Store a reference
         inventoryBtns.push(inventory_btn);
     }
+    
+    // button zone action
+    // buttom menu
+    const menu_btn = createButton('Menu');
+    menu_btn.position(60, 850);
+    menu_btn.mousePressed(openMenu);
+
+    // buttom change
+    const change_btn = createButton('Echange');
+    change_btn.position(360, 850);
+
+    // buttom sell
+    const sell_btn = createButton('Vendre');
+    sell_btn.position(660, 850);
+
+    // button board game
+    // buttom roll
+    const roll_btn = createButton('Lancer les dés');
+    roll_btn.position(1170, 700);
+    roll_btn.mousePressed(() => {
+        throwTheDices(dice_1, dice_2);
+    });
+
+    // button end turn
+    const turn_btn = createButton('Fin du tour');
+    // TODO handle tun_btn position and display depending on when turn ends
+    turn_btn.position(-100, -100);
+    turn_btn.mousePressed(() => {
+       dice_1.resetDice();
+       dice_2.resetDice();
+       // TODO change the player's turn
+    });
+
+    // buttom get out off jail
+    const jail_btn = createButton('Sortir de prison');
+    jail_btn.position(1380, 700);
+
+    // buttom build
+    const build_btn = createButton('Construire');
+    build_btn.position(1590, 700);
+}
+
+/**
+ * Updates a player's balance.
+ * Returns true if successful, false otherwise.
+ */
+function updateWallet(playerIndex, amount) {
+    // Check if the player exists (index between 0 and 7)
+    if (wallet[playerIndex] === undefined) {
+      console.error("Error: This player doesn't exist!");
+      alert("Wait, we couldn't find that player in the game.");
+      return false;
+    }
+
+    // Check if player has enough money for the payment
+    if (wallet[playerIndex] + amount < 0) {
+      console.warn("Insufficient funds!");
+      alert("Sorry, you don't have enough money for this!");
+      return false;
+    }
+
+    // Apply transaction and update balance
+    wallet[playerIndex] += amount;
+    console.log("Success! Player " + (playerIndex + 1) + " updated.");
+    return true;
 }
 
 window.draw = function() {
     //draw users zones
-    for (let i = 0; i < 8; i++) {
-        //draw background players
+    //draw background players
+    for (let i = 0; i < window.nbPlayers; i++) {
         stroke('white');
         fill('#242424');
         rect(60, 60 + (i * 95), 750, 80);
@@ -280,36 +343,46 @@ window.draw = function() {
                 // right
                 if (i > 30) {
                     push();
-                    translate(1868, 110 + ((i - 30) * 75));
-                    rotate(90);
-                    text('₩', 0, 0);
+                    textAlign(LEFT);
+                    translate(1845, 128 + ((i - 30) * 75)); // 126 + 2
+                    rotate(0);
+                    text(GameBoardPrice[i], 0, 0);
                     pop();
                     push();
-                    translate(1880, 105 + ((i - 30) * 75));
-                    rotate(-90);
-                    text(GameBoardPrice[i], 0, 0)
+                    textAlign(LEFT);
+                    translate(1841, 116 + ((i - 30) * 75)); // 114 + 2
+                    rotate(180);
+                    text('₩', 0, 0);
                     pop();
                 }
                 // top
                 else if (i > 20) {
-                    text('₩', 1085 + ((i - 20) * 75), 52);
                     push();
-                    translate(1080 + ((i - 20) * 75), 40);
+                    textAlign(LEFT);
+                    translate(1068 + ((i - 20) * 75), 106); // 1060 + 8
+                    rotate(0);
+                    text(GameBoardPrice[i], 0, 0);
+                    pop();
+                    push();
+                    textAlign(LEFT);
+                    translate(1064 + ((i - 20) * 75), 94); // 1056 + 8
                     rotate(180);
-                    text(GameBoardPrice[i], 0, 0)
+                    text('₩', 0, 0);
                     pop();
                 }
                 // left
                 else if (i > 10) {
                     push();
-                    translate(1028, 840 + (-(i - 10) * 75));
-                    rotate(-90);
-                    text('₩', 0, 0);
+                    textAlign(LEFT);
+                    translate(1047, 876 + (-(i - 10) * 75)); // 1050 - 3
+                    rotate(0);
+                    text(GameBoardPrice[i], 0, 0);
                     pop();
                     push();
-                    translate(1015, 845 + (-(i - 10) * 75));
-                    rotate(90);
-                    text(GameBoardPrice[i], 0, 0)
+                    textAlign(LEFT);
+                    translate(1043, 864 + (-(i - 10) * 75)); // 1046 - 3
+                    rotate(180);
+                    text('₩', 0, 0);
                     pop();
                 }
                 // bottom
@@ -324,27 +397,34 @@ window.draw = function() {
             }
             textSize(14);
             textAlign(CENTER);
+            // corners
+            if (i === 0 || i === 10 || i === 20 || i === 30) {
+                if (i === 0)  text(GameBoardName[i], 1835, 870);
+                if (i === 10) text(GameBoardName[i], 1060, 870);
+                if (i === 20) text(GameBoardName[i], 1060, 85);
+                if (i === 30) text(GameBoardName[i], 1835, 85);
+            }
             // right
-            if (i > 30) {
+            else if (i > 30) {
                 push();
-                translate(1850, 100 + ((i - 30) * 75));
-                rotate(-90);
+                translate(1845, 100 + ((i - 30) * 75));
+                rotate(0);
                 text(GameBoardName[i], 0, 0)
                 pop();
             }
             // top
             else if (i > 20) {
                 push();
-                translate(1075 + ((i - 20) * 75), 75);
-                rotate(180);
+                translate(1075 + ((i - 20) * 75), 69);
+                rotate(0);
                 text(GameBoardName[i], 0, 0)
                 pop();
             }
-            // left
+            // left.
             else if (i > 10) {
                 push();
-                translate(1055, 850 + (-(i - 10) * 75));
-                rotate(90);
+                translate(1052, 840 + (-(i - 10) * 75));
+                rotate(0);
                 text(GameBoardName[i], 0, 0)
                 pop();
             }
@@ -356,57 +436,6 @@ window.draw = function() {
         }
     }
 
-    image(dices[2], 1325, 430, 100, 100);
-    image(dices[2], 1475, 430, 100, 100);
+    dice_1.displayDice();
+    dice_2.displayDice();
 }
-
-// ---------------- Banking & Movement Logic ----------------
-
-/**
- * Updates a player's wallet balance
- * @param {number} playerIndex - Index of the player (0 to 7)
- * @param {number} amount - Amount to add (positive) or subtract (negative)
- */
-function updateWallet(playerIndex, amount) {
-    const player = game.players[playerIndex];
-
-    if (!player) {
-        console.error("Player index not found.");
-        return false;
-    }
-
-    // Check for insufficient funds
-    if (player.money + amount < 0) {
-        console.warn("Insufficient funds for player " + (playerIndex + 1));
-        return false;
-    }
-
-    // Apply transaction
-    player.money += amount;
-    return true;
-}
-
-/**
- * Moves player and rewards 200 if passing through the GO tile (index 0)
- * @param {number} playerIndex - Index of the player moving
- * @param {number} diceRoll - Total value of the dice roll
- */
-function movePlayer(playerIndex, diceRoll) {
-    const player = game.players[playerIndex];
-
-    // Ensure position exists
-    if (player.position === undefined) player.position = 0;
-
-    const oldPos = player.position;
-    const newPos = (oldPos + diceRoll) % 40;
-
-    // If new position is lower than old position, player passed GO
-    if (newPos < oldPos) {
-        console.log("Passed GO! Player " + (playerIndex + 1) + " receives 200₩");
-        updateWallet(playerIndex, 200);
-    }
-
-    player.position = newPos;
-}
-
-//ab

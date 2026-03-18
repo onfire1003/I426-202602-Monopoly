@@ -116,11 +116,11 @@ git branch fix/nameOfBranch
 ### commit
 #### description
 - le commit doit être en anglais.
-- le commentaire du commit doi fair une description breve de ce qui a été fait dans le commit.
-- il que le commit utilise les conventions cité plus haut.
-- le commit doit correspondre aux exemple.
+- le commentaire du commit doit faire une brève description de ce qui a été fait dans le commit.
+- il faut que le commit utilise les conventions cité ci-dessus.
+- le commit doit correspondre aux exemples.
 
-#### exemeple
+#### exemple
 #### pour ajouter les fichier dans le commit 
 ```bash
 git add nameOfFile

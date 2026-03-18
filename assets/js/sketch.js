@@ -231,11 +231,26 @@ window.setup = function() {
         const n = window.nbPlayers || 0;
         if (n === 0) return;
 
+        const player = game.players[currentPlayer];
+
+        // Si le joueur est bloqué en prison
+        if (player.skipBlockedTurn()) {
+            console.log(
+                `Joueur ${currentPlayer + 1} est bloqué. Tours restants : ${player.blockedTurns}`
+            );
+
+            currentPlayer = (currentPlayer + 1) % n;
+            return;
+        }
+
         const result = await throwTheDices(dice_1, dice_2);
 
-        game.players[currentPlayer].move(result.total);
+        player.move(result.total);
 
-        playerInPrison(game.players[currentPlayer]);
+        if (player.placement === 30) {
+            player.putInPrison();
+            console.log(`Joueur ${currentPlayer + 1} va en prison pour 3 tours.`);
+        }
 
         currentPlayer = (currentPlayer + 1) % n;
     });
@@ -484,13 +499,7 @@ function testMovePlayer(playerIndex, steps) {
     );
 }
 
-function playerInPrison(player) {
-    if (player.placement === 30) {
-        player.placement = 10;
-        return true;
-    }
-    return false;
-}
+
 // ↓ EN DEHORS de draw()
 function drawPawnsOnBoard() {
     for (let i = 0; i < (window.nbPlayers || 0); i++) {

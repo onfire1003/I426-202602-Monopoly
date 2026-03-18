@@ -15,6 +15,7 @@ export default class Player {
         this.money = money;            // Player's money balance
         this.inventory = inventory;      // Owned items/properties
         this.in_prison = in_prison;   // Prison status
+        this.blockedTurns = 0; // nombre de tours restants bloqués
     }
 
     getTileCoords(board) {
@@ -35,7 +36,10 @@ export default class Player {
      */
     move(number) {
         this.placement = (this.placement + number) % 40;
-    }
+        if (this.blockedTurns > 0) {
+            return false;
+            }
+        }
 
     /**
      * Adds money to the player's balance
@@ -68,13 +72,13 @@ export default class Player {
     removeFromInventory(object_index) {
         this.inventory.splice(object_index, 1);
     }
-
     /**
      * Sends the player to prison
      * Sets prison status and moves player to position 10
      */
     putInPrison() {
         this.in_prison = true;
+        this.blockedTurns = 3; // bloqué pendant 3 tours
         this.bringTo(10);
     }
 
@@ -83,5 +87,19 @@ export default class Player {
      */
     releaseFromPrison() {
         this.in_prison = false;
+        this.blockedTurns = 0;
+    }
+    skipBlockedTurn() {
+        if (this.blockedTurns > 0) {
+            this.blockedTurns--;
+
+            if (this.blockedTurns === 0) {
+                this.in_prison = false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }

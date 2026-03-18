@@ -19,19 +19,6 @@ export default class Game {
         this.current_player = 0;
 
         /**
-         * List of available actions mapped to their functions.
-         * @type {Object<string, Function>}
-         */
-        this.actions = {
-            "dice" : this.throwTheDice,
-            "buy" : this.buy,
-            "sell" : this.sell,
-            "build" : this.build,
-            "trade" : this.trade,
-            "go_out_of_prison" : this.goOutOfPrison
-        }
-
-        /**
          * List of currently possible actions for the player.
          * @type {string[]}
          */
@@ -82,7 +69,7 @@ export default class Game {
             this.possible_actions.push("go_out_of_prison");
         }
 
-        if (player.inventory) {
+        if (player.inventory.length > 0) {
             this.possible_actions.push("trade", "sell", "build");
         }
 
@@ -103,11 +90,15 @@ export default class Game {
 
     /**
      * Roll the dice for the current player.
-     *
+     * @param {int} dice_1 value of dice 1
+     * @param {int} dice_2 value of dice 2
      * @returns {void}
      */
-    throwTheDice() {
-        console.log("dice Trowned");
+    throwTheDice(dice_1, dice_2) {
+        this.players[this.current_player].move(dice_1 + dice_2);
+        if (dice_1 !== dice_2) {
+            this.possible_actions = this.possible_actions.filter(action => action !== "dice");
+        }
     }
 
     /**

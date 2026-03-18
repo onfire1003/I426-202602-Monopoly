@@ -1,5 +1,4 @@
 "use strict";
-import Game from "./class/game.js";
 import Dice from "./class/dice.js";
 
 const StreetsColors = {
@@ -11,7 +10,6 @@ const StreetsColors = {
     "yellow": "#e8ee3a",
     "green": "#14a14a",
     "blue": "#3982e4"
-// A FAIRE !!!
 }
 
 
@@ -26,6 +24,8 @@ let dice_2;
 
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
+let roll_btn, finish_btn, jail_btn, buy_btn, exchange_btn, sell_btn, build_btn;
+
 
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
@@ -77,10 +77,14 @@ function inventoryPopup(id, title) {
     const h = createElement('h2', title);
     h.parent(popup);
 
+    let message = game.players[id].inventory && game.players[id].inventory.length > 0
+        ? game.players[id].inventory.join("<br>")
+        : "Inventaire vide pour le moment.";
+
     // Contenu exemple
     const content = createDiv(`
         <div class="inventory-content">
-            Inventaire vide pour le moment.
+            ${message}
         </div>
     `);
     content.parent(popup);
@@ -105,6 +109,8 @@ function inventoryPopup(id, title) {
 function throwTheDices(dice_1, dice_2) {
     dice_1.throwDice();
     dice_2.throwDice();
+
+    window.game.throwTheDice(1, 2)
 }
 
 // ---------------- ASSETS ----------------
@@ -148,7 +154,7 @@ window.setup = function() {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
         inventory_btn.mousePressed(() => {
-            inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
+                inventoryPopup(i, `Inventaire du joueur ${i + 1}`);
         });
          // Store a reference
         inventoryBtns.push(inventory_btn);
@@ -160,54 +166,55 @@ window.setup = function() {
     menu_btn.position(60, 850);
     menu_btn.mousePressed(openMenu);
 
-    // buttom change
-    const change_btn = createButton('Echange');
-    change_btn.position(360, 850);
+    // buttom exchange
+    exchange_btn = createButton('Echange');
+    exchange_btn.position(360, 850);
+    exchange_btn.mousePressed(() => {
+        game.trade(1);
+    });
 
     // buttom sell
-    const sell_btn = createButton('Vendre');
+    sell_btn = createButton('Vendre');
     sell_btn.position(660, 850);
+    sell_btn.mousePressed(() => {
+        throwTheDices(dice_1, dice_2);
+    });
 
     // button board game
-    // buttom roll
-    const roll_btn = createButton('Lancer les dés');
+    // button roll
+    roll_btn = createButton('Lancer les dés');
     roll_btn.position(1170, 700);
     roll_btn.mousePressed(() => {
         throwTheDices(dice_1, dice_2);
     });
 
+    // button finish turn
+    finish_btn = createButton('Finir le tour');
+    finish_btn.position(1170, 700);
+    finish_btn.mousePressed(() => {
+        window.game.finishTurn()
+    });
+    finish_btn.hide();
+
     // buttom get out off jail
-    const jail_btn = createButton('Sortir de prison');
+    jail_btn = createButton('Sortir de prison');
     jail_btn.position(1380, 700);
+    jail_btn.mousePressed(() => {
+        window.game.goOutOfPrison()
+    });
+
+    buy_btn = createButton('Acheter');
+    buy_btn.position(1380, 700);
+    buy_btn.mousePressed(() => {
+        window.game.buy()
+    });
 
     // buttom build
-    const build_btn = createButton('Construire');
+    build_btn = createButton('Construire');
     build_btn.position(1590, 700);
-}
-
-/**
- * Updates a player's balance.
- * Returns true if successful, false otherwise.
- */
-function updateWallet(playerIndex, amount) {
-    // Check if the player exists (index between 0 and 7)
-    if (wallet[playerIndex] === undefined) {
-      console.error("Error: This player doesn't exist!");
-      alert("Wait, we couldn't find that player in the game.");
-      return false;
-    }
-
-    // Check if player has enough money for the payment
-    if (wallet[playerIndex] + amount < 0) {
-      console.warn("Insufficient funds!");
-      alert("Sorry, you don't have enough money for this!");
-      return false;
-    }
-
-    // Apply transaction and update balance
-    wallet[playerIndex] += amount;
-    console.log("Success! Player " + (playerIndex + 1) + " updated.");
-    return true;
+    build_btn.mousePressed(() => {
+        window.game.build()
+    });
 }
 
 window.draw = function() {
@@ -235,8 +242,21 @@ window.draw = function() {
         text(': ' + game.players[i].money, 300, 115 + (i * 95));
     }
 
-    triangle(120, 100, 150, 90, 150, 110);
+    triangle(120, 100+95*game.current_player, 150, 90+95*game.current_player, 150, 110+95*game.current_player);
 
+    //buttons
+    jail_btn[window.game.possible_actions.includes("go_out_of_prison") ? 'show' : 'hide']();
+    buy_btn[window.game.possible_actions.includes("buy") ? 'show' : 'hide']();
+    exchange_btn[window.game.possible_actions.includes("exchange") ? 'show' : 'hide']();
+    sell_btn[window.game.possible_actions.includes("sell") ? 'show' : 'hide']();
+    build_btn[window.game.possible_actions.includes("build") ? 'show' : 'hide']();
+    if (window.game.possible_actions.includes("dice")) {
+        finish_btn.hide();
+        roll_btn.show();
+    } else {
+        roll_btn.hide();
+        finish_btn.show();
+    }
     //draw game board
     let widthRect = 875;
     let heightRect = 875;

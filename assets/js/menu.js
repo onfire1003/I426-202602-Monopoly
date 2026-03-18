@@ -40,6 +40,7 @@ btnStart.addEventListener("click", () => {
     }
 
     window.game = new Game(nb);
+    window.game.players[0].addToInventory("aaaaaa");
 
     // 🔒 Lock permanently for this run
     window.playersLocked = true;

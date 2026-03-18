@@ -505,7 +505,7 @@ function drawPawnsOnBoard() {
     for (let i = 0; i < (window.nbPlayers || 0); i++) {
         const coords = game.players[i].getTileCoords(game.board);
         const offset = getOffsetForPlayer(i);
-        console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
+        console.log(`Joueur ${i} → case ${game.players[i].blockedTurns} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
         image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
     }
 }

@@ -111,18 +111,48 @@ function inventoryPopup(id, title) {
 ``
 
 async function throwTheDices(dice_1, dice_2) {
-    await rollTheDices(dice_1, dice_2);
-
-    await dice_1.throwDice();
-    await dice_2.throwDice();
-
-    let result = dice_1.value + dice_2.value;
-    // TODO game.players[currentPlayer].move(result);
+    const result = await rollTheDices(dice_1, dice_2);
+    return result;
 }
 
-async function rollTheDices(dice_1, dice_2) {
-    dice_1.rollDice(20);
-    dice_2.rollDice(20);
+function rollTheDices(dice_1, dice_2) {
+    return new Promise((resolve) => {
+        let finished = 0;
+
+        function checkEnd() {
+            finished++;
+
+            if (finished === 2) {
+                let dice1Result = dice_1.finalValue;
+                let dice2Result = dice_2.finalValue;
+
+                // Si un seul résultat existe, on le duplique
+                if (dice1Result != null && dice2Result == null) {
+                    dice2Result = dice1Result;
+                }
+                if (dice2Result != null && dice1Result == null) {
+                    dice1Result = dice2Result;
+                }
+
+                // Sécurité ultime : si les 2 sont null
+                if (dice1Result == null && dice2Result == null) {
+                    dice1Result = 1;
+                    dice2Result = 1;
+                }
+
+                const total = dice1Result + dice2Result;
+
+                resolve({
+                    dice1: dice1Result,
+                    dice2: dice2Result,
+                    total: total
+                });
+            }
+        }
+
+        dice_1.rollDice(20, checkEnd);
+        dice_2.rollDice(20, checkEnd);
+    });
 }
 function getOffsetForPlayer(playerIndex) {
     let sameCase = 0;
@@ -198,17 +228,17 @@ window.setup = function() {
     roll_btn.position(1170, 700);
     let currentPlayer = 0;
 
-    roll_btn.mousePressed(() => {
+    roll_btn.mousePressed(async () => {
         const n = window.nbPlayers || 0;
         if (n === 0) return;
 
-        throwTheDices(dice_1, dice_2);
+        const result = await throwTheDices(dice_1, dice_2);
 
-        const steps = dice_1.value + dice_2.value;
-        game.players[currentPlayer].move(steps);
+        game.players[currentPlayer].move(result.total);
 
-        if (game.players[currentPlayer].placement === 30)
+        if (game.players[currentPlayer].placement === 30) {
             game.players[currentPlayer].putInPrison();
+        }
 
         currentPlayer = (currentPlayer + 1) % n;
     });
@@ -445,7 +475,7 @@ function drawPawnsOnBoard() {
     for (let i = 0; i < (window.nbPlayers || 0); i++) {
         const coords = game.players[i].getTileCoords(game.board);
         const offset = getOffsetForPlayer(i);
-        console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
+        //console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
         image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
     }
 }

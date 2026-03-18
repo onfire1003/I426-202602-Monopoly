@@ -106,13 +106,58 @@ function inventoryPopup(id, title) {
 }
 ``
 
-function throwTheDices(dice_1, dice_2) {
-    dice_1.throwDice();
-    dice_2.throwDice();
-
-    window.game.throwTheDice(1, 2)
+async function throwTheDices(dice_1, dice_2) {
+    const result = await rollTheDices(dice_1, dice_2);
+    return result;
 }
 
+function rollTheDices(dice_1, dice_2) {
+    return new Promise((resolve) => {
+        let finished = 0;
+
+        function checkEnd() {
+            finished++;
+
+            if (finished === 2) {
+                let dice1Result = dice_1.finalValue;
+                let dice2Result = dice_2.finalValue;
+
+                // Si un seul résultat existe, on le duplique
+                if (dice1Result != null && dice2Result == null) {
+                    dice2Result = dice1Result;
+                }
+                if (dice2Result != null && dice1Result == null) {
+                    dice1Result = dice2Result;
+                }
+
+                // Sécurité ultime : si les 2 sont null
+                if (dice1Result == null && dice2Result == null) {
+                    dice1Result = 1;
+                    dice2Result = 1;
+                }
+
+                const total = dice1Result + dice2Result;
+
+                resolve({
+                    dice1: dice1Result,
+                    dice2: dice2Result,
+                    total: total
+                });
+            }
+        }
+
+        dice_1.rollDice(20, checkEnd);
+        dice_2.rollDice(20, checkEnd);
+    });
+}
+function getOffsetForPlayer(playerIndex) {
+    let sameCase = 0;
+    for (let j = 0; j < playerIndex; j++) {
+        if (game.players[j].placement === game.players[playerIndex].placement)
+            sameCase++;
+    }
+    return { x: (sameCase % 2) * 18, y: Math.floor(sameCase / 2) * 18 };
+}
 // ---------------- ASSETS ----------------
 window.preload = function() {
     // load dice
@@ -146,7 +191,6 @@ window.setup = function() {
 
     dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
     dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
-
     addGlobalButtonStyle()
     let n = window.game.nb_player || 0;
 
@@ -184,8 +228,31 @@ window.setup = function() {
     // button roll
     roll_btn = createButton('Lancer les dés');
     roll_btn.position(1170, 700);
-    roll_btn.mousePressed(() => {
-        throwTheDices(dice_1, dice_2);
+    let currentPlayer = 0;
+
+    roll_btn.mousePressed(async () => {
+        const n = window.nbPlayers || 0;
+        if (n === 0) return;
+
+        const result = await throwTheDices(dice_1, dice_2);
+
+        game.players[currentPlayer].move(result.total);
+
+        if (game.players[currentPlayer].placement === 30) {
+            game.players[currentPlayer].putInPrison();
+        }
+
+        currentPlayer = (currentPlayer + 1) % n;
+    });
+
+    // button end turn
+    const turn_btn = createButton('Fin du tour');
+    // TODO handle tun_btn position and display depending on when turn ends
+    turn_btn.position(-100, -100);
+    turn_btn.mousePressed(() => {
+       dice_1.resetDice();
+       dice_2.resetDice();
+       // TODO change the player's turn
     });
 
     // button finish turn
@@ -429,4 +496,15 @@ window.draw = function() {
 
     dice_1.displayDice();
     dice_2.displayDice();
+    drawPawnsOnBoard();
+}
+
+// ↓ EN DEHORS de draw()
+function drawPawnsOnBoard() {
+    for (let i = 0; i < (window.nbPlayers || 0); i++) {
+        const coords = game.players[i].getTileCoords(game.board);
+        const offset = getOffsetForPlayer(i);
+        //console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
+        image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
+    }
 }

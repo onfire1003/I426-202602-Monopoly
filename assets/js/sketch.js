@@ -104,11 +104,9 @@ function inventoryPopup(id, title) {
         }
     });
 }
-``
 
 async function throwTheDices(dice_1, dice_2) {
-    const result = await rollTheDices(dice_1, dice_2);
-    return result;
+    return await rollTheDices(dice_1, dice_2);
 }
 
 function rollTheDices(dice_1, dice_2) {
@@ -221,44 +219,30 @@ window.setup = function() {
     sell_btn = createButton('Vendre');
     sell_btn.position(660, 850);
     sell_btn.mousePressed(() => {
-        throwTheDices(dice_1, dice_2);
+        game.sell();
     });
 
     // button board game
     // button roll
     roll_btn = createButton('Lancer les dés');
     roll_btn.position(1170, 700);
-    let currentPlayer = 0;
 
     roll_btn.mousePressed(async () => {
-        const n = window.nbPlayers || 0;
-        if (n === 0) return;
-
         const result = await throwTheDices(dice_1, dice_2);
+        console.log(result);
+        game.throwTheDice(result.dice1, result.dice2);
 
-        game.players[currentPlayer].move(result.total);
-
-        if (game.players[currentPlayer].placement === 30) {
-            game.players[currentPlayer].putInPrison();
+        if (game.players[game.current_player].placement === 30) {
+            game.players[game.current_player].putInPrison();
         }
-
-        currentPlayer = (currentPlayer + 1) % n;
-    });
-
-    // button end turn
-    const turn_btn = createButton('Fin du tour');
-    // TODO handle tun_btn position and display depending on when turn ends
-    turn_btn.position(-100, -100);
-    turn_btn.mousePressed(() => {
-       dice_1.resetDice();
-       dice_2.resetDice();
-       // TODO change the player's turn
     });
 
     // button finish turn
     finish_btn = createButton('Finir le tour');
     finish_btn.position(1170, 700);
     finish_btn.mousePressed(() => {
+        dice_1.resetDice();
+        dice_2.resetDice();
         window.game.finishTurn()
     });
     finish_btn.hide();
@@ -501,8 +485,8 @@ window.draw = function() {
 
 // ↓ EN DEHORS de draw()
 function drawPawnsOnBoard() {
-    for (let i = 0; i < (window.nbPlayers || 0); i++) {
-        const coords = game.players[i].getTileCoords(game.board);
+    for (let i = 0; i < (window.game.nb_player || 0); i++) {
+        const coords = game.board[game.players[i].placement].coords;
         const offset = getOffsetForPlayer(i);
         //console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
         image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);

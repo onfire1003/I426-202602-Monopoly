@@ -31,7 +31,11 @@ export default class Player {
      * @param {number} number
      */
     move(number) {
+        const start = this.placement;
         this.placement = (this.placement + number) % 40;
+        if (this.placement < start) {
+            this.addMoney(200)
+        }
     }
 
     /**

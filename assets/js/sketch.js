@@ -108,7 +108,6 @@ function inventoryPopup(id, title) {
         }
     });
 }
-``
 
 async function throwTheDices(dice_1, dice_2) {
     const result = await rollTheDices(dice_1, dice_2);
@@ -236,9 +235,7 @@ window.setup = function() {
 
         game.players[currentPlayer].move(result.total);
 
-        if (game.players[currentPlayer].placement === 30) {
-            game.players[currentPlayer].putInPrison();
-        }
+        playerInPrison(game.players[currentPlayer]);
 
         currentPlayer = (currentPlayer + 1) % n;
     });
@@ -469,13 +466,37 @@ window.draw = function() {
     dice_2.displayDice();
     drawPawnsOnBoard();
 }
+function testMovePlayer(playerIndex, steps) {
+    if (!game.players[playerIndex]) {
+        console.log("Joueur introuvable");
+        return;
+    }
 
+    game.players[playerIndex].move(steps);
+
+    if (game.players[playerIndex].placement === 30) {
+        game.players[playerIndex].placement = 10;
+        console.log(`Joueur ${playerIndex + 1} envoyé en prison (case 10)`);
+    }
+
+    console.log(
+        `Joueur ${playerIndex + 1} a avancé de ${steps} cases. Nouvelle position : ${game.players[playerIndex].placement}`
+    );
+}
+
+function playerInPrison(player) {
+    if (player.placement === 30) {
+        player.placement = 10;
+        return true;
+    }
+    return false;
+}
 // ↓ EN DEHORS de draw()
 function drawPawnsOnBoard() {
     for (let i = 0; i < (window.nbPlayers || 0); i++) {
         const coords = game.players[i].getTileCoords(game.board);
         const offset = getOffsetForPlayer(i);
-        //console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
+        console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
         image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
     }
 }

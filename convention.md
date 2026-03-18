@@ -1,9 +1,9 @@
 # fichier de convention 
-1. commentaire
-2. code
-3. fichier
-4. branch
-5. commit
+1. [commentaire](#commentaire)
+2. [code](#code)
+3. [fichier](#fichier)
+4. [branch](#branch)
+5. [commit](#commit)
 
 ## commentaire
 ### description
@@ -113,7 +113,7 @@ git branch feature/nameOfBanch
 git branch fix/nameOfBanch
 ```
 
-### branch
+### commit
 #### description
 - le commit doit être en anglais.
 - le commentaire du commit doi fair une description breve de ce qui a été fait dans le commit.

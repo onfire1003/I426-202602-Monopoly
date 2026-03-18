@@ -1,9 +1,11 @@
+import Game from "./class/game.js";
 // Grab DOM refs
 const overlay = document.getElementById('overlay');
 const panneau = document.getElementById('panneau');
 const btnFermer = document.getElementById('fermer');
 const nbPlayersInput = document.getElementById("nbPlayers");
 const btnStart = document.getElementById("btnStart");
+window.game = new Game(1);
 
 // Optional small helper to toggle disabled state (and visuals)
 function lockPlayersUI(locked) {
@@ -37,8 +39,8 @@ btnStart.addEventListener("click", () => {
         return;
     }
 
-    // Expose globally for p5.js
-    window.nbPlayers = nb;
+    window.game = new Game(nb);
+    window.game.players[0].addToInventory("aaaaaa");
 
     // 🔒 Lock permanently for this run
     window.playersLocked = true;

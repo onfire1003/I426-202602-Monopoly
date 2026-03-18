@@ -17,9 +17,6 @@ export default class Player {
         this.in_prison = in_prison;   // Prison status
     }
 
-    getTileCoords(board) {
-        return board[this.placement].coords;
-    }
     /**
      * Moves player directly to a specific position
      * @param {number} position
@@ -34,7 +31,11 @@ export default class Player {
      * @param {number} number
      */
     move(number) {
+        const start = this.placement;
         this.placement = (this.placement + number) % 40;
+        if (this.placement < start) {
+            this.addMoney(200)
+        }
     }
 
     /**

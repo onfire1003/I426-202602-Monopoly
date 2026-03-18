@@ -1,12 +1,5 @@
 "use strict";
-import Game from "./class/game.js";
 import Dice from "./class/dice.js";
-
-const game = new Game(8);
-const GameBoard = game.board.map(tile => tile.type);
-const GameBoardPrice = game.board.map(tile => tile.price);
-const GameBoardName = game.board.map(tile => tile.name);
-
 
 const StreetsColors = {
     "brown": "#8c3916",
@@ -17,7 +10,6 @@ const StreetsColors = {
     "yellow": "#e8ee3a",
     "green": "#14a14a",
     "blue": "#3982e4"
-// A FAIRE !!!
 }
 
 
@@ -32,8 +24,8 @@ let dice_2;
 
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
+let roll_btn, finish_btn, jail_btn, buy_btn, exchange_btn, sell_btn, build_btn;
 
-let n = window.nbPlayers || 0;
 
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
@@ -85,10 +77,14 @@ function inventoryPopup(id, title) {
     const h = createElement('h2', title);
     h.parent(popup);
 
+    let message = game.players[id].inventory && game.players[id].inventory.length > 0
+        ? game.players[id].inventory.join("<br>")
+        : "Inventaire vide pour le moment.";
+
     // Contenu exemple
     const content = createDiv(`
         <div class="inventory-content">
-            Inventaire vide pour le moment.
+            ${message}
         </div>
     `);
     content.parent(popup);
@@ -108,11 +104,9 @@ function inventoryPopup(id, title) {
         }
     });
 }
-``
 
 async function throwTheDices(dice_1, dice_2) {
-    const result = await rollTheDices(dice_1, dice_2);
-    return result;
+    return await rollTheDices(dice_1, dice_2);
 }
 
 function rollTheDices(dice_1, dice_2) {
@@ -196,13 +190,13 @@ window.setup = function() {
     dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
     dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
     addGlobalButtonStyle()
-    let n = window.nbPlayers || 0;
+    let n = window.game.nb_player || 0;
 
     for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
         inventory_btn.mousePressed(() => {
-            inventoryPopup(`inventaire-${i}`, `Inventaire du joueur ${i + 1}`);
+                inventoryPopup(i, `Inventaire du joueur ${i + 1}`);
         });
          // Store a reference
         inventoryBtns.push(inventory_btn);
@@ -214,64 +208,70 @@ window.setup = function() {
     menu_btn.position(60, 850);
     menu_btn.mousePressed(openMenu);
 
-    // buttom change
-    const change_btn = createButton('Echange');
-    change_btn.position(360, 850);
+    // buttom exchange
+    exchange_btn = createButton('Echange');
+    exchange_btn.position(360, 850);
+    exchange_btn.mousePressed(() => {
+        game.trade(1);
+    });
 
     // buttom sell
-    const sell_btn = createButton('Vendre');
+    sell_btn = createButton('Vendre');
     sell_btn.position(660, 850);
+    sell_btn.mousePressed(() => {
+        game.sell();
+    });
 
     // button board game
-    // buttom roll
-    const roll_btn = createButton('Lancer les dés');
+    // button roll
+    roll_btn = createButton('Lancer les dés');
     roll_btn.position(1170, 700);
-    let currentPlayer = 0;
 
     roll_btn.mousePressed(async () => {
-        const n = window.nbPlayers || 0;
-        if (n === 0) return;
-
         const result = await throwTheDices(dice_1, dice_2);
+        console.log(result);
+        game.throwTheDice(result.dice1, result.dice2);
 
-        game.players[currentPlayer].move(result.total);
-
-        if (game.players[currentPlayer].placement === 30) {
-            game.players[currentPlayer].putInPrison();
+        if (game.players[game.current_player].placement === 30) {
+            game.players[game.current_player].putInPrison();
         }
-
-        currentPlayer = (currentPlayer + 1) % n;
     });
 
-    // button end turn
-    const turn_btn = createButton('Fin du tour');
-    // TODO handle tun_btn position and display depending on when turn ends
-    turn_btn.position(-100, -100);
-    turn_btn.mousePressed(() => {
-       dice_1.resetDice();
-       dice_2.resetDice();
-       // TODO change the player's turn
+    // button finish turn
+    finish_btn = createButton('Finir le tour');
+    finish_btn.position(1170, 700);
+    finish_btn.mousePressed(() => {
+        dice_1.resetDice();
+        dice_2.resetDice();
+        window.game.finishTurn()
     });
+    finish_btn.hide();
 
     // buttom get out off jail
-    const jail_btn = createButton('Sortir de prison');
+    jail_btn = createButton('Sortir de prison');
     jail_btn.position(1380, 700);
+    jail_btn.mousePressed(() => {
+        window.game.goOutOfPrison()
+    });
+
+    buy_btn = createButton('Acheter');
+    buy_btn.position(1380, 700);
+    buy_btn.mousePressed(() => {
+        window.game.buy()
+    });
 
     // buttom build
-    const build_btn = createButton('Construire');
+    build_btn = createButton('Construire');
     build_btn.position(1590, 700);
+    build_btn.mousePressed(() => {
+        window.game.build()
+    });
 }
-
-/**
- * Updates a player's balance.
- * Returns true if successful, false otherwise.
- */
-
 
 window.draw = function() {
     //draw users zones
     //draw background players
-    for (let i = 0; i < window.nbPlayers; i++) {
+    for (let i = 0; i < (window.game.nb_player); i++) {
         stroke('white');
         fill('#242424');
         rect(60, 60 + (i * 95), 750, 80);
@@ -293,8 +293,21 @@ window.draw = function() {
         text(': ' + game.players[i].money, 300, 115 + (i * 95));
     }
 
-    triangle(120, 100, 150, 90, 150, 110);
+    triangle(120, 100+95*game.current_player, 150, 90+95*game.current_player, 150, 110+95*game.current_player);
 
+    //buttons
+    jail_btn[window.game.possible_actions.includes("go_out_of_prison") ? 'show' : 'hide']();
+    buy_btn[window.game.possible_actions.includes("buy") ? 'show' : 'hide']();
+    exchange_btn[window.game.possible_actions.includes("exchange") ? 'show' : 'hide']();
+    sell_btn[window.game.possible_actions.includes("sell") ? 'show' : 'hide']();
+    build_btn[window.game.possible_actions.includes("build") ? 'show' : 'hide']();
+    if (window.game.possible_actions.includes("dice")) {
+        finish_btn.hide();
+        roll_btn.show();
+    } else {
+        roll_btn.hide();
+        finish_btn.show();
+    }
     //draw game board
     let widthRect = 875;
     let heightRect = 875;
@@ -341,41 +354,41 @@ window.draw = function() {
         noStroke();
 
         // put info on tiles
-        for (let i = 0; i < GameBoard.length; i++) {
+        for (let i = 0; i < window.game.board_size; i++) {
             // street colors
-            if (StreetsColors[GameBoard[i]]) {
+            if (StreetsColors[window.game.board[i].type]) {
                 // right
                 if (i > 30) {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1787, 62 + ((i - 30) * 75), 26, 71);
                 }
                 // top
                 else if (i > 20) {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1037 + ((i - 20) * 75), 108, 71, 26);
                 }
                 // left
                 else if (i > 10) {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1083, 812 + (-(i - 10) * 75), 26, 71);
                 }
                 // bottom
                 else {
-                    fill(StreetsColors[GameBoard[i]]);
+                    fill(StreetsColors[window.game.board[i].type]);
                     rect(1787 + (-i * 75), 811, 71, 26);
                 }
             }
             // price
             textSize(16);
             fill("white");
-            if (GameBoardPrice[i] !== 0) {
+            if (window.game.board[i].price !== 0) {
                 // right
                 if (i > 30) {
                     push();
                     textAlign(LEFT);
                     translate(1845, 128 + ((i - 30) * 75)); // 126 + 2
                     rotate(0);
-                    text(GameBoardPrice[i], 0, 0);
+                    text(window.game.board[i].price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -390,7 +403,7 @@ window.draw = function() {
                     textAlign(LEFT);
                     translate(1068 + ((i - 20) * 75), 106); // 1060 + 8
                     rotate(0);
-                    text(GameBoardPrice[i], 0, 0);
+                    text(window.game.board[i].price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -405,7 +418,7 @@ window.draw = function() {
                     textAlign(LEFT);
                     translate(1047, 876 + (-(i - 10) * 75)); // 1050 - 3
                     rotate(0);
-                    text(GameBoardPrice[i], 0, 0);
+                    text(window.game.board[i].price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -421,24 +434,24 @@ window.draw = function() {
                     rotate(180);
                     text('₩', 0, 0);
                     pop();
-                    text(GameBoardPrice[i], 1815 + (-i * 75), 905)
+                    text(window.game.board[i].price, 1815 + (-i * 75), 905)
                 }
             }
             textSize(14);
             textAlign(CENTER);
             // corners
             if (i === 0 || i === 10 || i === 20 || i === 30) {
-                if (i === 0)  text(GameBoardName[i], 1835, 870);
-                if (i === 10) text(GameBoardName[i], 1060, 870);
-                if (i === 20) text(GameBoardName[i], 1060, 85);
-                if (i === 30) text(GameBoardName[i], 1835, 85);
+                if (i === 0)  text(window.game.board[i].name, 1835, 870);
+                if (i === 10) text(window.game.board[i].name, 1060, 870);
+                if (i === 20) text(window.game.board[i].name, 1060, 85);
+                if (i === 30) text(window.game.board[i].name, 1835, 85);
             }
             // right
             else if (i > 30) {
                 push();
                 translate(1845, 100 + ((i - 30) * 75));
                 rotate(0);
-                text(GameBoardName[i], 0, 0)
+                text(window.game.board[i].name, 0, 0)
                 pop();
             }
             // top
@@ -446,7 +459,7 @@ window.draw = function() {
                 push();
                 translate(1075 + ((i - 20) * 75), 69);
                 rotate(0);
-                text(GameBoardName[i], 0, 0)
+                text(window.game.board[i].name, 0, 0)
                 pop();
             }
             // left.
@@ -454,12 +467,12 @@ window.draw = function() {
                 push();
                 translate(1052, 840 + (-(i - 10) * 75));
                 rotate(0);
-                text(GameBoardName[i], 0, 0)
+                text(window.game.board[i].name, 0, 0)
                 pop();
             }
             // bottom
             else {
-                text(GameBoardName[i], 1822 + (-i * 75), 870)
+                text(window.game.board[i].name, 1822 + (-i * 75), 870)
             }
             textAlign(LEFT);
         }
@@ -472,8 +485,8 @@ window.draw = function() {
 
 // ↓ EN DEHORS de draw()
 function drawPawnsOnBoard() {
-    for (let i = 0; i < (window.nbPlayers || 0); i++) {
-        const coords = game.players[i].getTileCoords(game.board);
+    for (let i = 0; i < (window.game.nb_player || 0); i++) {
+        const coords = game.board[game.players[i].placement].coords;
         const offset = getOffsetForPlayer(i);
         //console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
         image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);

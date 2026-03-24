@@ -1,3 +1,12 @@
+/***********************************************************************************************************************
+ * Program name :           player.js
+ * Description :            the class for the players
+ * Author :                 Cédric Jankiewicz
+ * Creation date :          4.03.2026
+ * Modified by :            Cédric Jankiewicz
+ * Modification date :      24.03.2026
+ * Version :                0.1.5
+ **********************************************************************************************************************/
 "use strict";
 
 // Player class represents a single player in the game

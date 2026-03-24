@@ -1,3 +1,12 @@
+/***********************************************************************************************************************
+ * Program name :           test_class.js
+ * Description :            some test to be sure the classes work
+ * Author :                 Cédric Jankiewicz
+ * Creation date :          4.03.2026
+ * Modified by :            Cédric Jankiewicz
+ * Modification date :      24.03.2026
+ * Version :                0.1.5
+ **********************************************************************************************************************/
 "use strict"
 import Game from "./game.js";
 

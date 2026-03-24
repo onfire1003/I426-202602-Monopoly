@@ -1,3 +1,12 @@
+/***********************************************************************************************************************
+ * Program name :           tile.js
+ * Description :            the class for the tiles
+ * Author :                 Cédric Jankiewicz
+ * Creation date :          4.03.2026
+ * Modified by :            Cédric Jankiewicz
+ * Modification date :      24.03.2026
+ * Version :                0.1.5
+ **********************************************************************************************************************/
 "use strict";
 
 export default class Tile {

@@ -1,4 +1,6 @@
 import Game from "./class/game.js";
+import { streets, companies, consumables } from "./object.js";
+
 // Grab DOM refs
 const overlay = document.getElementById('overlay');
 const panneau = document.getElementById('panneau');
@@ -40,7 +42,13 @@ btnStart.addEventListener("click", () => {
     }
 
     window.game = new Game(nb);
-    window.game.players[0].addToInventory("aaaaaa");
+    window.game.players[0].addToInventory(streets[0]);
+
+    window.game.players[0].addToInventory(streets[2]);
+    window.game.players[0].addToInventory(streets[3]);
+    window.game.players[0].addToInventory(streets[1]);
+    window.game.players[0].addToInventory(companies[1]);
+
 
     // 🔒 Lock permanently for this run
     window.playersLocked = true;

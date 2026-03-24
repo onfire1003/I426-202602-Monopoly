@@ -1,6 +1,5 @@
 "use strict";
 import Dice from "./class/dice.js";
-
 const StreetsColors = {
     "brown": "#8c3916",
     "cyan": "#b9f1fb",
@@ -64,44 +63,75 @@ function inventoryPopup(id, title) {
     const old = document.getElementById(`popup-${id}`);
     if (old) old.remove();
 
-    // Overlay
     const bg = createDiv('')
         .id(`popup-${id}`)
         .addClass('inventory-overlay');
 
-    // Container panel
     const popup = createDiv('').addClass('inventory-popup');
     popup.parent(bg);
 
-    // Titre
-    const h = createElement('h2', title);
-    h.parent(popup);
+    createElement('h2', title).parent(popup);
 
-    let message = game.players[id].inventory && game.players[id].inventory.length > 0
-        ? game.players[id].inventory.join("<br>")
-        : "Inventaire vide pour le moment.";
+    const inv = game.players[id].inventory;
 
-    // Contenu exemple
-    const content = createDiv(`
-        <div class="inventory-content">
-            ${message}
+    // 🟦 TRI PAR ID
+    const sorted = [...inv].sort((a, b) => {
+        const idA = typeof a === "string" ? 9999 : a.id ?? 9999;
+        const idB = typeof b === "string" ? 9999 : b.id ?? 9999;
+        return idA - idB;
+    });
+
+    // 🏷️ LISTES PAR CATEGORIES
+    let streetsList = [];
+    let railroadsList = [];
+    let utilitiesList = [];
+    let consumablesList = [];
+
+    sorted.forEach(item => {
+        if (typeof item === "string") {
+            consumablesList.push(item);
+        } else if (item.type === "railroad") {
+            railroadsList.push(`${item.name} — ${item.price}$`);
+        } else if (item.type === "utility") {
+            utilitiesList.push(`${item.name} — ${item.price}$`);
+        } else if (item.color) {
+            streetsList.push(`${item.name} (${item.color}) — ${item.price}$`);
+        }
+    });
+
+    // 🖨️ HTML FINAL
+    let message = `
+        <div class="inv-section">
+            <h3>🏠 Propriétés</h3>
+            ${streetsList.length ? streetsList.join("<br>") : "<i>Aucune</i>"}
         </div>
-    `);
+
+        <div class="inv-section">
+            <h3>🚆 Gares</h3>
+            ${railroadsList.length ? railroadsList.join("<br>") : "<i>Aucune</i>"}
+        </div>
+
+        <div class="inv-section">
+            <h3>⚡ Compagnies</h3>
+            ${utilitiesList.length ? utilitiesList.join("<br>") : "<i>Aucune</i>"}
+        </div>
+
+        <div class="inv-section">
+            <h3>🎟️ Consommables</h3>
+            ${consumablesList.length ? consumablesList.join("<br>") : "<i>Aucune</i>"}
+        </div>
+    `;
+
+    const content = createDiv(`<div class="inventory-content">${message}</div>`);
     content.parent(popup);
 
-    // Bouton fermer
     const closeBtn = createButton('Fermer');
     closeBtn.addClass('inventory-close');
     closeBtn.parent(popup);
-
-    // Fermeture
     closeBtn.mousePressed(() => bg.remove());
 
-    // Fermeture en cliquant hors du popup
     bg.mousePressed((e) => {
-        if (e.target.classList.contains('inventory-overlay')) {
-            bg.remove();
-        }
+        if (e.target.classList.contains('inventory-overlay')) bg.remove();
     });
 }
 

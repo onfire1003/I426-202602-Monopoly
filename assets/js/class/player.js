@@ -49,9 +49,14 @@ export default class Player {
     /**
      * Removes money from the player's balance
      * @param {number} amount
+     * @returns {boolean} if the player had enough money to pay
      */
     removeMoney(amount) {
-        this.money -= amount;
+        if (this.money >= amount) {
+            this.money -= amount;
+            return true
+        }
+        else {return false}
     }
 
     /**

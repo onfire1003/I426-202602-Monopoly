@@ -121,7 +121,7 @@ export default class Game {
      * @returns {void}
      */
     buy() {
-        console.log(this.board[this.players[this.current_player].placement].name)
+        console.log(this.board[this.players[this.current_player].placement])
     }
 
     /**

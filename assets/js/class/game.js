@@ -79,16 +79,6 @@ export default class Game {
 
     }
 
-    /*
-    * remove the player from the players list if eliminated
-    * @param {number} player_index index of the player
-    * */
-    removePlayer(player_index) {
-        if (this.players[player_index].playerEliminated()) {
-            this.players.splice(this.players.indexOf(player_index), 1);
-        }
-    }
-
     /**
      * Determine the possible actions available to a player.
      *
@@ -113,12 +103,16 @@ export default class Game {
     }
 
     /**
-     * Finish the current player's turn and switch to the next player.
+     * Finish the current player's turn and switch to the next non-eliminated player.
      *
      * @returns {void}
      */
     finishTurn() {
-        this.current_player = (this.current_player + 1) % this.nb_player;
+        let cant_play = true
+        while (cant_play) {
+            this.current_player = (this.current_player + 1) % this.nb_player;
+            if (!this.players[this.current_player].bankrupt) {cant_play = false}
+        }
         this.getPossibleActions(this.current_player);
     }
 

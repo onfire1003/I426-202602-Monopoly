@@ -192,6 +192,8 @@ window.setup = function() {
     addGlobalButtonStyle()
     let n = window.game.nb_player || 0;
 
+    inventoryBtns.forEach(btn => btn.remove());
+    inventoryBtns = [];
     for (let i = 0; i < n; i++) {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));

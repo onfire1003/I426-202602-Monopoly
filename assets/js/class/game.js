@@ -1,14 +1,38 @@
+/***********************************************************************************************************************
+ * Program name :           game.js
+ * Description :            the class for the game
+ * Author :                 Cédric Jankiewicz
+ * Creation date :          4.03.2026
+ * Modified by :            Thierry Perroud
+ * Modification date :      25.03.2026
+ * Version :                0.1.6
+ **********************************************************************************************************************/
 "use strict";
 import Player from "./player.js";
 import Tile from "./tile.js";
 
+
 export default class Game {
+
+    /**
+     * Create a new Game instance.
+     *
+     * @param {number} nb_player - Number of players in the game.
+     * @param {number} [board_size=40] - Number of tiles on the board.
+     */
     constructor(nb_player, board_size = 40) {
         this.nb_player = nb_player;
         this.board_size = board_size;
         this.players = [];
         this.board = [];
+        this.current_player = 0;
+        this.nb_doubles = 0;
 
+        /**
+         * List of currently possible actions for the player.
+         * @type {string[]}
+         */
+        this.possible_actions = ["dice"];
 
         // game innit
         for (let i = 0; i < this.nb_player; i++) {
@@ -53,9 +77,116 @@ export default class Game {
         for (let i = 0; i < this.board_size; i++) {
             this.board.push(new Tile(TilesType[i], TilesPrice[i], TilesName[i], null, TilesCoords[i]));
         }
+
     }
 
-    getPlayerPosition(playerIndex) {
-        return this.players[playerIndex].placement;
+    /**
+     * Determine the possible actions available to a player.
+     *
+     * @param {number} player_index - Index of the player.
+     * @returns {void}
+     */
+    getPossibleActions(player_index) {
+        this.possible_actions = ["dice"];
+        let player = this.players[player_index];
+
+        if (player.in_prison) {
+            this.possible_actions.push("go_out_of_prison");
+        }
+
+        if (player.inventory.length > 0) {
+            this.possible_actions.push("trade", "sell", "build");
+        }
+
+        if (this.board[player.placement].price > 0) {
+            this.possible_actions.push("buy");
+        }
+    }
+
+    /**
+     * Finish the current player's turn and switch to the next non-eliminated player.
+     *
+     * @returns {void}
+     */
+    finishTurn() {
+        let cant_play = true
+        while (cant_play) {
+            this.current_player = (this.current_player + 1) % this.nb_player;
+            if (!this.players[this.current_player].bankrupt) {cant_play = false}
+        }
+        this.getPossibleActions(this.current_player);
+        this.nb_doubles = 0;
+    }
+
+    /**
+     * Roll the dice for the current player.
+     * @param {int} dice_1 value of dice 1
+     * @param {int} dice_2 value of dice 2
+     * @returns {void}
+     */
+    throwTheDice(dice_1, dice_2) {
+        if (!this.players[this.current_player].in_prison) {
+            this.players[this.current_player].move(dice_1 + dice_2);
+        }
+
+        if (dice_1 !== dice_2 || this.nb_doubles >= 2) {
+            if (this.nb_doubles >= 2) this.players[this.current_player].putInPrison();
+            this.possible_actions = this.possible_actions.filter(action => action !== "dice");
+        }
+        else {
+            if (this.players[this.current_player].in_prison) {
+                this.goOutOfPrison()
+                this.possible_actions = this.possible_actions.filter(action => action !== "dice");
+            }
+            else this.nb_doubles++;
+        }
+    }
+
+    /**
+     * Buy the tile the current player is standing on.
+     *
+     * @returns {void}
+     */
+    buy() {
+        console.log(this.board[this.players[this.current_player].placement])
+    }
+
+    /**
+     * Sell a property from the current player's inventory.
+     *
+     * @returns {void}
+     */
+    sell() {
+        console.log(this.players[this.current_player].inventory);
+    }
+
+    /**
+     * Build a structure on a property owned by the player.
+     *
+     * @returns {void}
+     */
+    build() {
+        console.log("building");
+    }
+
+    /**
+     * Trade with another player.
+     *
+     * @param {number} player_to_trade_index - Index of the player to trade with.
+     * @returns {void}
+     */
+    trade(player_to_trade_index) {
+        console.log(this.players[this.current_player].inventory);
+        console.log(this.players[player_to_trade_index].inventory);
+    }
+
+    /**
+     * Release the current player from prison.
+     *
+     * @returns {void}
+     */
+    goOutOfPrison() {
+        this.players[this.current_player].releaseFromPrison();
+        console.log(this.players[this.current_player].in_prison);
     }
 }

@@ -8,14 +8,14 @@ export default class Tile {
      * @param action the action done when landed on the tile
      * @param object
      * @param coords tile coordonate
-     * @param.owner
+     * @param.owned
      */
-    constructor(type, name, object, action, coords = { x: 0, y: 0 }, owner){
+    constructor(type, name, object, action, coords = { x: 0, y: 0 }, owned){
         this.type = type;
         this.name = name;
         this.object= object;
         this.action = action;
         this.coords = coords;
-        this.owner = null;
+        this.owned = null;
     }
 }

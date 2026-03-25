@@ -83,7 +83,6 @@ export default class Game {
      * @returns {void}
      */
     getPossibleActions(player_index) {
-        this.possible_actions = ["dice"];
         let player = this.players[player_index];
 
         if (player.in_prison) {
@@ -94,7 +93,7 @@ export default class Game {
             this.possible_actions.push("trade", "sell", "build");
         }
 
-        if (this.board[player.placement].object && this.board[player.placement].owner === null) {
+        if (this.board[player.placement].object && !this.board[player.placement].owned) {
             this.possible_actions.push("buy");
         }
     }
@@ -106,6 +105,7 @@ export default class Game {
      */
     finishTurn() {
         this.current_player = (this.current_player + 1) % this.nb_player;
+        this.possible_actions = ["dice"];
         this.getPossibleActions(this.current_player);
     }
 
@@ -139,30 +139,14 @@ export default class Game {
             return;
         }
 
-        // Déjà achetée ?
-        if (tile.owner !== null) {
-            console.warn("Cette propriété appartient déjà à quelqu'un.");
-            return;
-        }
-
-        const price = tile.object.price;
-
-        // Assez d'argent ?
-        if (player.money < price) {
-            console.warn("Le joueur n'a pas assez d'argent pour acheter.");
-            return;
-        }
-
         // Déduire le prix
-        player.removeMoney(price);
+        player.removeMoney(tile.object.price);
 
         // Ajouter l'objet à l'inventaire
         player.addToInventory(tile.object);
 
         // Assigner le propriétaire
-        tile.owner = this.current_player;
-
-        console.log(`Le joueur ${this.current_player + 1} a acheté ${tile.object.name} pour ${price}₩.`);
+        tile.owned = true;
 
         // Mettre à jour les actions
         this.getPossibleActions(this.current_player);

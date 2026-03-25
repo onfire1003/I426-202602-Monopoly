@@ -83,6 +83,7 @@ export default class Game {
      * @returns {void}
      */
     getPossibleActions(player_index) {
+        this.possible_actions = [];
         let player = this.players[player_index];
 
         if (player.in_prison) {
@@ -105,8 +106,8 @@ export default class Game {
      */
     finishTurn() {
         this.current_player = (this.current_player + 1) % this.nb_player;
-        this.possible_actions = ["dice"];
         this.getPossibleActions(this.current_player);
+        this.possible_actions.push("dice");
     }
 
     /**
@@ -132,12 +133,6 @@ export default class Game {
     buy() {
         const player = this.players[this.current_player];
         const tile = this.board[player.placement];
-
-        // Vérifier si la case est achetable
-        if (!tile.object) {
-            console.warn("Cette case n'a aucun objet achetable.");
-            return;
-        }
 
         // Déduire le prix
         player.removeMoney(tile.object.price);

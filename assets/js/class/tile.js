@@ -16,6 +16,6 @@ export default class Tile {
         this.object= object;
         this.action = action;
         this.coords = coords;
-        this.owned = null;
+        this.owned = false;
     }
 }

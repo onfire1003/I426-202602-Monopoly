@@ -129,11 +129,19 @@ export default class Game {
             this.players[this.current_player].move(dice_1 + dice_2);
         }
 
-        if (dice_1 !== dice_2 || this.nb_doubles >= 2) {
-            if (this.nb_doubles >= 2) this.players[this.current_player].putInPrison();
+        if (dice_1 !== dice_2 || this.nb_doubles > 2) {    // No doubles or 3 doubles
+            if (this.players[this.current_player].in_prison) {
+                this.players[this.current_player].blockedTurns--;
+                if (this.players[this.current_player].blockedTurns === 0) { // 3 misses in prison is a fine of 200$
+                    this.players[this.current_player].releaseFromPrison();
+                    this.players[this.current_player].removeMoney(200);
+                }
+            }
+
+            if (this.nb_doubles > 2) this.players[this.current_player].putInPrison(); // put in prison if 3 doubles
             this.possible_actions = this.possible_actions.filter(action => action !== "dice");
         }
-        else {
+        else {                                              // Doubles
             if (this.players[this.current_player].in_prison) {
                 this.goOutOfPrison()
                 this.possible_actions = this.possible_actions.filter(action => action !== "dice");

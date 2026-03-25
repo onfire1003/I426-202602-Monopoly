@@ -1,3 +1,12 @@
+/***********************************************************************************************************************
+ * Program name :           game.js
+ * Description :            the class for the game
+ * Author :                 Cédric Jankiewicz
+ * Creation date :          4.03.2026
+ * Modified by :            Cédric Jankiewicz
+ * Modification date :      24.03.2026
+ * Version :                0.1.5
+ **********************************************************************************************************************/
 "use strict";
 import Player from "./player.js";
 import Tile from "./tile.js";
@@ -74,6 +83,7 @@ export default class Game {
         for (let i = 0; i < this.board_size; i++) {
             this.board.push(new Tile(TilesType[i], TilesName[i], TilesObject[i] ,null, TilesCoords[i]));
         }
+
     }
 
     /**
@@ -100,12 +110,16 @@ export default class Game {
     }
 
     /**
-     * Finish the current player's turn and switch to the next player.
+     * Finish the current player's turn and switch to the next non-eliminated player.
      *
      * @returns {void}
      */
     finishTurn() {
-        this.current_player = (this.current_player + 1) % this.nb_player;
+        let cant_play = true
+        while (cant_play) {
+            this.current_player = (this.current_player + 1) % this.nb_player;
+            if (!this.players[this.current_player].bankrupt) {cant_play = false}
+        }
         this.getPossibleActions(this.current_player);
         this.possible_actions.push("dice");
     }

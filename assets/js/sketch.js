@@ -411,14 +411,14 @@ window.draw = function() {
             // price
             textSize(16);
             fill("white");
-            if (window.game.board[i].price !== 0) {
+            if (window.game.board[i].object) {
                 // right
                 if (i > 30) {
                     push();
                     textAlign(LEFT);
                     translate(1845, 128 + ((i - 30) * 75)); // 126 + 2
                     rotate(0);
-                    text(window.game.board[i].price, 0, 0);
+                    text(window.game.board[i].object.price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -433,7 +433,7 @@ window.draw = function() {
                     textAlign(LEFT);
                     translate(1068 + ((i - 20) * 75), 106); // 1060 + 8
                     rotate(0);
-                    text(window.game.board[i].price, 0, 0);
+                    text(window.game.board[i].object.price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -448,7 +448,7 @@ window.draw = function() {
                     textAlign(LEFT);
                     translate(1047, 876 + (-(i - 10) * 75)); // 1050 - 3
                     rotate(0);
-                    text(window.game.board[i].price, 0, 0);
+                    text(window.game.board[i].object.price, 0, 0);
                     pop();
                     push();
                     textAlign(LEFT);
@@ -464,7 +464,7 @@ window.draw = function() {
                     rotate(180);
                     text('₩', 0, 0);
                     pop();
-                    text(window.game.board[i].price, 1815 + (-i * 75), 905)
+                    text(window.game.board[i].object.price, 1815 + (-i * 75), 905)
                 }
             }
             textSize(14);

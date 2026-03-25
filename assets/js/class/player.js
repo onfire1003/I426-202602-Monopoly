@@ -88,6 +88,7 @@ export default class Player {
     releaseFromPrison() {
         this.in_prison = false;
         this.blockedTurns = 0;
+        this.removeMoney(50)
     }
     skipBlockedTurn() {
         if (this.blockedTurns > 0) {

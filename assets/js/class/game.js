@@ -10,10 +10,10 @@
 "use strict";
 import Player from "./player.js";
 import Tile from "./tile.js";
+import objects from "../object.js";
 
 
 export default class Game {
-
     /**
      * Create a new Game instance.
      *
@@ -46,6 +46,13 @@ export default class Game {
             "go_to_prison", "green", "green", "community", "green", "station", "luck", "blue", "tax", "blue",
         ]
 
+        const TilesObject = [
+            null, objects.streets[0], null, objects.streets[1], null, objects.companies[0], objects.streets[2], null, objects.streets[3], objects.streets[4],
+            null, objects.streets[5], objects.companies[4], objects.streets[6], objects.streets[7], objects.companies[1], objects.streets[8], null, objects.streets[9], objects.streets[10],
+            null, objects.streets[11], null, objects.streets[12], objects.streets[13], objects.companies[2], objects.streets[14], objects.streets[15], objects.companies[5], objects.streets[16],
+            null, objects.streets[17], objects.streets[18], null, objects.streets[19], objects.companies[3], null, objects.streets[20], null, objects.streets[21]
+        ]
+
         const TilesPrice = [
             0, 100, 0, 100, 0, 100, 100, 0, 100, 100,
             0, 100, 100, 100, 100, 100, 100, 0, 100, 100,
@@ -74,7 +81,7 @@ export default class Game {
 
 
         for (let i = 0; i < this.board_size; i++) {
-            this.board.push(new Tile(TilesType[i], TilesPrice[i], TilesName[i], null, TilesCoords[i]));
+            this.board.push(new Tile(TilesType[i], TilesName[i], TilesObject[i] ,null, TilesCoords[i]));
         }
 
     }
@@ -86,7 +93,7 @@ export default class Game {
      * @returns {void}
      */
     getPossibleActions(player_index) {
-        this.possible_actions = ["dice"];
+        this.possible_actions = [];
         let player = this.players[player_index];
 
         if (player.in_prison) {
@@ -97,7 +104,7 @@ export default class Game {
             this.possible_actions.push("trade", "sell", "build");
         }
 
-        if (this.board[player.placement].price > 0) {
+        if (this.board[player.placement].object && !this.board[player.placement].owned) {
             this.possible_actions.push("buy");
         }
     }
@@ -114,6 +121,7 @@ export default class Game {
             if (!this.players[this.current_player].bankrupt) {cant_play = false}
         }
         this.getPossibleActions(this.current_player);
+        this.possible_actions.push("dice");
     }
 
     /**
@@ -127,15 +135,30 @@ export default class Game {
         if (dice_1 !== dice_2) {
             this.possible_actions = this.possible_actions.filter(action => action !== "dice");
         }
+
+        this.getPossibleActions(this.current_player);
     }
 
     /**
      * Buy the tile the current player is standing on.
      *
      * @returns {void}
-     */
+    */
     buy() {
-        console.log(this.board[this.players[this.current_player].placement])
+        const player = this.players[this.current_player];
+        const tile = this.board[player.placement];
+
+        // Déduire le prix
+        player.removeMoney(tile.object.price);
+
+        // Ajouter l'objet à l'inventaire
+        player.addToInventory(tile.object);
+
+        // Assigner le propriétaire
+        tile.owned = true;
+
+        // Mettre à jour les actions
+        this.getPossibleActions(this.current_player);
     }
 
     /**

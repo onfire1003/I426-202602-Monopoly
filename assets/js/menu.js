@@ -1,4 +1,5 @@
 import Game from "./class/game.js";
+
 // Grab DOM refs
 const overlay = document.getElementById('overlay');
 const panneau = document.getElementById('panneau');
@@ -40,7 +41,8 @@ btnStart.addEventListener("click", () => {
     }
 
     window.game = new Game(nb);
-    window.game.players[0].addToInventory("aaaaaa");
+
+
 
     // 🔒 Lock permanently for this run
     window.playersLocked = true;

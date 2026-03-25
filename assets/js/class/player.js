@@ -115,16 +115,4 @@ export default class Player {
             return false;
         }
     }
-
-    /**
-     * if the player don't have any money and nothing in their inventory
-     * */
-    playerEliminated(){
-        if (this.money <= 0 && this.inventory.length === 0){
-            this.in_bankrupt = true;
-            return true;
-        }else{
-            return false;
-        }
-    }
 }

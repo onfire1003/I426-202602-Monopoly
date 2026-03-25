@@ -95,22 +95,6 @@ export default class Game {
      * @returns {void}
      */
     getPossibleActions(player_index) {
-        this.possible_actions = [];
-        let player = this.players[player_index];
-
-        if (player.in_prison) {
-            this.possible_actions.push("go_out_of_prison");
-        }
-
-    }
-
-    /**
-     * Determine the possible actions available to a player.
-     *
-     * @param {number} player_index - Index of the player.
-     * @returns {void}
-     */
-    getPossibleActions(player_index) {
         this.possible_actions = ["dice"];
         let player = this.players[player_index];
 
@@ -150,6 +134,8 @@ export default class Game {
      * @returns {void}
      */
     throwTheDice(dice_1, dice_2) {
+        let can_rethrow = true;
+
         if (!this.players[this.current_player].in_prison) {
             this.players[this.current_player].move(dice_1 + dice_2);
         }
@@ -164,17 +150,18 @@ export default class Game {
             }
 
             if (this.nb_doubles > 2) this.players[this.current_player].putInPrison(); // put in prison if 3 doubles
-            this.possible_actions = this.possible_actions.filter(action => action !== "dice");
+            can_rethrow = false;
         }
         else {                                              // Doubles
             if (this.players[this.current_player].in_prison) {
                 this.goOutOfPrison()
-                this.possible_actions = this.possible_actions.filter(action => action !== "dice");
+                can_rethrow = false;
             }
             else this.nb_doubles++;
         }
 
         this.getPossibleActions(this.current_player);
+        if (!can_rethrow) this.possible_actions = this.possible_actions.filter(action => action !== "dice");
     }
 
     /**

@@ -278,7 +278,15 @@ window.draw = function() {
 
         //draw icon players
         noStroke();
-        image(pawns[i], 70, 78 + (i * 95), 45, 45);
+        if (game.players[i].bankrupt) {
+            tint(128, 128)
+            image(pawns[i], 70, 78 + (i * 95), 45, 45);
+            inventoryBtns[i].hide();
+        }
+        else {
+            tint(255, 255)
+            image(pawns[i], 70, 78 + (i * 95), 45, 45);
+        }
 
         //draw wallet players
         textSize(32);
@@ -489,6 +497,8 @@ function drawPawnsOnBoard() {
         const coords = game.board[game.players[i].placement].coords;
         const offset = getOffsetForPlayer(i);
         //console.log(`Joueur ${i} → case ${game.players[i].placement} → x:${coords.x} y:${coords.y}`); //Affiche les joueur 1,2,3,4,5,6,7,8 + numéro de la case actuelle + posisiton du pion
-        image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
+        if (!game.players[i].bankrupt) {
+            image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
+        }
     }
 }

@@ -165,35 +165,67 @@ function mortgagePopup(id, title) {
     let utilitiesList = [];
 
     sorted.forEach(item => {
+        if (typeof item === "string") return;
+
         if (item.type === "railroad") {
-            railroadsList.push(`${item.name} — ${item.mortgage}$`);
+            railroadsList.push({
+                label: `${item.name} — ${item.mortgage}$`,
+                id: item.id
+            });
         } else if (item.type === "utility") {
-            utilitiesList.push(`${item.name} — ${item.mortgage}$`);
+            utilitiesList.push({
+                label: `${item.name} — ${item.mortgage}$`,
+                id: item.id
+            });
         } else if (item.color) {
-            streetsList.push(`${item.name} (${item.color}) — ${item.mortgage}$`);
+            streetsList.push({
+                label: `${item.name} (${item.color}) — ${item.mortgage}$`,
+                id: item.id
+            });
         }
     });
 
-    // 🖨️ HTML FINAL
-    let message = `
-        <div class="inv-section">
-            <h3>🏠 Propriétés</h3>
-            ${streetsList.length ? streetsList.join("<br>") : "<i>Aucune</i>"}
-        </div>
+    function addSection(title, list, parent) {
+        const section = createDiv('').addClass('inv-section');
+        section.parent(parent);
 
-        <div class="inv-section">
-            <h3>🚆 Gares</h3>
-            ${railroadsList.length ? railroadsList.join("<br>") : "<i>Aucune</i>"}
-        </div>
+        createElement('h3', title).parent(section);
 
-        <div class="inv-section">
-            <h3>⚡ Compagnies</h3>
-            ${utilitiesList.length ? utilitiesList.join("<br>") : "<i>Aucune</i>"}
-        </div>
-    `;
+        if (!list.length) {
+            createElement('i', 'Aucune').parent(section);
+            return;
+        }
 
-    const content = createDiv(`<div class="inventory-content">${message}</div>`);
+        list.forEach(item => {
+            const row = createDiv('').addClass('inv-row');
+            row.parent(section);
+
+            // texte
+            createSpan(item.label).parent(row);
+
+            // bouton
+            const btn = createButton(
+                'Hypothéquer'
+            );
+            btn.addClass('inventory-btn');
+            btn.parent(row);
+
+            btn.mousePressed(() => {
+                game.sell(item.id)
+
+                // refresh popup
+                bg.remove();
+                mortgagePopup(id, title);
+            });
+        });
+    }
+
+    const content = createDiv('').addClass('inventory-content');
     content.parent(popup);
+
+    addSection('🏠 Propriétés', streetsList, content);
+    addSection('🚆 Gares', railroadsList, content);
+    addSection('⚡ Compagnies', utilitiesList, content);
 
     const closeBtn = createButton('Fermer');
     closeBtn.addClass('inventory-close');

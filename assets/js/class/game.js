@@ -164,10 +164,15 @@ export default class Game {
     /**
      * Sell a property from the current player's inventory.
      *
+     * @param {number} tile_index the tile being sold
      * @returns {void}
      */
-    sell(object_index) {
-        console.log(this.players[this.current_player].inventory);
+    sell(tile_index) {
+        console.log(tile_index);
+        this.players[this.current_player].addMoney(this.board[tile_index].object.mortgage);
+        let inv_index = this.players[this.current_player].inventory.indexOf(this.board[tile_index].object);
+        this.players[this.current_player].removeFromInventory(inv_index);
+        this.board[tile_index].owned = false;
     }
 
     /**

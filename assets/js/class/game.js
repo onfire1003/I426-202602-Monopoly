@@ -104,7 +104,7 @@ export default class Game {
             this.possible_actions.push("trade", "sell", "build");
         }
 
-        if (this.board[player.placement].object && !this.board[player.placement].owned) {
+        if (this.board[player.placement].object && 0 <= this.board[player.placement].ownedby) {
             this.possible_actions.push("buy");
         }
     }
@@ -155,7 +155,7 @@ export default class Game {
         player.addToInventory(tile.object);
 
         // Assigner le propriétaire
-        tile.owned = true;
+        tile.ownedby = this.current_player;
 
         // Mettre à jour les actions
         this.getPossibleActions(this.current_player);

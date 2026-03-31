@@ -81,7 +81,7 @@ function inventoryPopup(id, title) {
         return idA - idB;
     });
 
-    // 🏷️ LISTES PAR CATEGORIES
+    // LISTES PAR CATEGORIES
     let streetsList = [];
     let railroadsList = [];
     let utilitiesList = [];
@@ -99,7 +99,7 @@ function inventoryPopup(id, title) {
         }
     });
 
-    // 🖨️ HTML FINAL
+    //  HTML FINAL
     let message = `
         <div class="inv-section">
             <h3>🏠 Propriétés</h3>
@@ -422,6 +422,23 @@ window.draw = function() {
             textSize(16);
             fill("white");
             if (window.game.board[i].object) {
+                // right
+                if (i > 30) {
+
+                }
+                // top
+                else if (i > 20) {
+
+                }
+                // left
+                else if (i > 10) {
+
+                }
+                // bottom
+                else {
+
+
+                }
                 // right
                 if (i > 30) {
                     push();

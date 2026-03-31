@@ -19,12 +19,12 @@ export default class Tile {
      * @param coords tile coordonate
      * @param.owned
      */
-    constructor(type, name, object, action, coords = { x: 0, y: 0 }, owned){
+    constructor(type, name, object, action, coords = { x: 0, y: 0 }){
         this.type = type;
         this.name = name;
         this.object= object;
         this.action = action;
         this.coords = coords;
-        this.owned = false;
+        this.ownedby = -1;
     }
 }

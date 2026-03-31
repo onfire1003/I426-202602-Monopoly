@@ -135,6 +135,77 @@ function inventoryPopup(id, title) {
     });
 }
 
+
+function mortgagePopup(id, title) {
+    // fermer si ouvert
+    const old = document.getElementById(`mortgage-${id}`);
+    if (old) old.remove();
+
+    const bg = createDiv('')
+        .id(`mortgage-${id}`)
+        .addClass('inventory-overlay');
+
+    const popup = createDiv('').addClass('inventory-popup');
+    popup.parent(bg);
+
+    createElement('h2', title).parent(popup);
+
+    const inv = game.players[game.current_player].inventory;
+
+    // 🟦 TRI PAR ID
+    const sorted = [...inv].sort((a, b) => {
+        const idA = typeof a === "string" ? 9999 : a.id ?? 9999;
+        const idB = typeof b === "string" ? 9999 : b.id ?? 9999;
+        return idA - idB;
+    });
+
+    // 🏷️ LISTES PAR CATEGORIES
+    let streetsList = [];
+    let railroadsList = [];
+    let utilitiesList = [];
+
+    sorted.forEach(item => {
+        if (item.type === "railroad") {
+            railroadsList.push(`${item.name} — ${item.mortgage}$`);
+        } else if (item.type === "utility") {
+            utilitiesList.push(`${item.name} — ${item.mortgage}$`);
+        } else if (item.color) {
+            streetsList.push(`${item.name} (${item.color}) — ${item.mortgage}$`);
+        }
+    });
+
+    // 🖨️ HTML FINAL
+    let message = `
+        <div class="inv-section">
+            <h3>🏠 Propriétés</h3>
+            ${streetsList.length ? streetsList.join("<br>") : "<i>Aucune</i>"}
+        </div>
+
+        <div class="inv-section">
+            <h3>🚆 Gares</h3>
+            ${railroadsList.length ? railroadsList.join("<br>") : "<i>Aucune</i>"}
+        </div>
+
+        <div class="inv-section">
+            <h3>⚡ Compagnies</h3>
+            ${utilitiesList.length ? utilitiesList.join("<br>") : "<i>Aucune</i>"}
+        </div>
+    `;
+
+    const content = createDiv(`<div class="inventory-content">${message}</div>`);
+    content.parent(popup);
+
+    const closeBtn = createButton('Fermer');
+    closeBtn.addClass('inventory-close');
+    closeBtn.parent(popup);
+    closeBtn.mousePressed(() => bg.remove());
+
+    bg.mousePressed((e) => {
+        if (e.target.classList.contains('inventory-overlay')) bg.remove();
+    });
+}
+
+
 async function throwTheDices(dice_1, dice_2) {
     return await rollTheDices(dice_1, dice_2);
 }
@@ -251,7 +322,7 @@ window.setup = function() {
     sell_btn = createButton('Vendre');
     sell_btn.position(660, 850);
     sell_btn.mousePressed(() => {
-        game.sell();
+        mortgagePopup();
     });
 
     // button board game

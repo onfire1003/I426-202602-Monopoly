@@ -166,7 +166,7 @@ export default class Game {
      *
      * @returns {void}
      */
-    sell() {
+    sell(object_index) {
         console.log(this.players[this.current_player].inventory);
     }
 

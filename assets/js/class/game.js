@@ -104,7 +104,8 @@ export default class Game {
             this.possible_actions.push("trade", "sell", "build");
         }
 
-        if (this.board[player.placement].object && !this.board[player.placement].owned) {
+        if (this.board[player.placement].object && !this.board[player.placement].owned &&
+            this.board[player.placement].object.price <= player.money) {
             this.possible_actions.push("buy");
         }
     }

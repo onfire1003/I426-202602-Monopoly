@@ -177,17 +177,17 @@ function mortgagePopup(id, title) {
     sorted.forEach(item => {
         if (typeof item === "string") return;
 
-        if (item.type === "railroad") {
+        if (item.type === "station") {
             railroadsList.push({
                 label: `${item.name} — ${item.mortgage}$ `,
                 id: item.id
             });
-        } else if (item.type === "utility") {
+        } else if (item.type === "company") {
             utilitiesList.push({
                 label: `${item.name} — ${item.mortgage}$ `,
                 id: item.id
             });
-        } else if (item.color) {
+        } else {
             streetsList.push({
                 label: `${item.name} (${item.color}) — ${item.mortgage}$ `,
                 id: item.id

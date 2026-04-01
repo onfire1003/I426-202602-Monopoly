@@ -17,14 +17,14 @@ export default class Tile {
      * @param action the action done when landed on the tile
      * @param object
      * @param coords tile coordonate
-     * @param.owned
+     * @param.ownedby
      */
-    constructor(type, name, object, action, coords = { x: 0, y: 0 }, owned){
+    constructor(type, name, object, action, coords = { x: 0, y: 0 }, ownedby = -1){
         this.type = type;
         this.name = name;
         this.object= object;
         this.action = action;
         this.coords = coords;
-        this.owned = false;
+        this.ownedby = ownedby;
     }
 }

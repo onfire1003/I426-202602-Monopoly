@@ -12,6 +12,18 @@ const StreetsColors = {
     "blue": "#3982e4"
 }
 
+const PlayersColors = {
+    0 : "#de1c1c",
+    1 : "#e8ee3a",
+    2 : "#14a14a",
+    3 : "#55FEFE",
+    4 : "#f0a933",
+    5 : "#f241a2",
+    6 : "#8c3916",
+    7 : "#3982e4"
+}
+
+
 // variables globales
 let pawns = [];
 let diceImages = [];
@@ -24,6 +36,7 @@ let dice_2;
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
 let roll_btn, finish_btn, jail_btn, buy_btn, exchange_btn, sell_btn, build_btn;
+
 
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
@@ -80,7 +93,7 @@ function inventoryPopup(id, title) {
         return idA - idB;
     });
 
-    // 🏷️ LISTES PAR CATEGORIES
+    // LISTES PAR CATEGORIES
     let streetsList = [];
     let railroadsList = [];
     let utilitiesList = [];
@@ -98,7 +111,7 @@ function inventoryPopup(id, title) {
         }
     });
 
-    // 🖨️ HTML FINAL
+    //  HTML FINAL
     let message = `
         <div class="inv-section">
             <h3>🏠 Propriétés</h3>
@@ -372,6 +385,8 @@ window.setup = function() {
         if (game.players[game.current_player].placement === 30) {
             game.players[game.current_player].putInPrison();
         }
+
+        game.checkRent(result.dice1 + result.dice2);
         roll_btn.removeAttribute("disabled");
     });
 
@@ -582,6 +597,12 @@ window.draw = function() {
                     pop();
                     text(window.game.board[i].object.price, 1815 + (-i * 75), 905)
                 }
+
+                let tile = window.game.board[i];
+                if (tile.ownedby !== null && tile.ownedby >= 0) {
+                    drawOwnerTriangle(i, tile.coords.x, tile.coords.y, tile.ownedby);
+                }
+
             }
             textSize(14);
             textAlign(CENTER);
@@ -651,4 +672,44 @@ function drawPawnsOnBoard() {
             image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
         }
     }
+}
+
+function drawOwnerTriangle(i, x, y, owner) {
+    if (owner == null || owner < 0) return;
+
+    push();
+    rotate(0);
+    fill(PlayersColors[owner]);
+    stroke('black');
+
+    if (i <= 9) {
+        triangle(
+            x + 13 , y + 107,
+            x + 23, y + 107,
+            x + 17, y + 93
+        );
+    }
+    else if (i <= 20) {
+        triangle(
+            x - 35, y + 37 ,
+            x - 35, y + 27,
+            x  - 20, y + 32
+        );
+    }
+    else if (i <= 30) {
+        triangle(
+            x + 22, y - 35,
+            x + 17, y - 21,
+            x + 12, y - 35
+        );
+    }
+    else {
+        triangle(
+            x + 88, y + 20,
+            x + 75, y + 25,
+            x + 88, y + 30
+        );
+    }
+
+    pop();
 }

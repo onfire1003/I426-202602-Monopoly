@@ -13,7 +13,6 @@ import Tile from "./tile.js";
 import objects from "../object.js";
 
 
-
 export default class Game {
     /**
      * Create a new Game instance.
@@ -53,13 +52,6 @@ export default class Game {
             null, objects.streets[5], objects.companies[4], objects.streets[6], objects.streets[7], objects.companies[1], objects.streets[8], null, objects.streets[9], objects.streets[10],
             null, objects.streets[11], null, objects.streets[12], objects.streets[13], objects.companies[2], objects.streets[14], objects.streets[15], objects.companies[5], objects.streets[16],
             null, objects.streets[17], objects.streets[18], null, objects.streets[19], objects.companies[3], null, objects.streets[20], null, objects.streets[21]
-        ]
-
-        const TilesPrice = [
-            0, 100, 0, 100, 0, 100, 100, 0, 100, 100,
-            0, 100, 100, 100, 100, 100, 100, 0, 100, 100,
-            0, 100, 0, 100, 100, 100, 100, 100, 100, 100,
-            0, 100, 100, 0, 100, 100, 0, 100, 0, 100,
         ]
 
         const TilesName = [
@@ -180,7 +172,7 @@ export default class Game {
         player.addToInventory(tile.object);
 
         // Assigner le propriétaire
-        tile.owned = true;
+        tile.ownedby = this.current_player;
 
         // Mettre à jour les actions
         this.getPossibleActions(this.current_player);
@@ -198,7 +190,7 @@ export default class Game {
         this.players[this.current_player].addMoney(this.board[tile_index].object.mortgage);
         let inv_index = this.players[this.current_player].inventory.indexOf(this.board[tile_index].object);
         this.players[this.current_player].removeFromInventory(inv_index);
-        this.board[tile_index].owned = false;
+        this.board[tile_index].ownedby = -1;
     }
 
     /**
@@ -229,5 +221,58 @@ export default class Game {
     goOutOfPrison() {
         this.players[this.current_player].releaseFromPrison();
         console.log(this.players[this.current_player].in_prison);
+    }
+
+    /**
+     * do the rent transaction, if the player don't have enough money their eliminated
+     *
+     * @param dice_value the value of both dice
+     */
+    checkRent(dice_value) {
+        let tile = game.board[game.players[this.current_player].placement]
+        if (tile.ownedby !== -1 && tile.ownedby !== this.current_player) {
+            let rent = this.getRent(tile.ownedby, game.players[this.current_player].placement, dice_value);
+            let result = this.players[this.current_player].removeMoney(rent);
+            if (result) {
+                this.players[tile.ownedby].addMoney(rent);
+                console.log(rent);
+            } else {
+                this.players[this.current_player].bankrupt = true;
+            }
+        }
+    }
+
+    /**
+     * get the rent amount
+     *
+     * @param owner_index the owner of the tile
+     * @param tile_index the tile the player is on
+     * @param dice_value the value of the dice
+     * @returns {*|number} the rent to pay
+     */
+    getRent(owner_index, tile_index, dice_value) {
+        let count;
+        switch(this.board[tile_index].type) {
+            case "station":
+                count = 0;
+                for (let i = 0; i < this.players[owner_index].inventory; i++) {
+                    if (this.players[owner_index].inventory[i] === "station") {
+                        count++;
+                    }
+                }
+                return this.board[tile_index].object.rent * count
+            case "company":
+                count = 0;
+                for (let i = 0; i < this.players[owner_index].inventory; i++) {
+                    if (this.players[owner_index].inventory[i] === "company") {
+                        count++;
+                    }
+                }
+                let mult;
+                if (count === 1) {mult = 4} else {mult = 10}
+                return dice_value * mult
+            default:
+                return this.board[tile_index].object.rent;
+        }
     }
 }

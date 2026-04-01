@@ -3,14 +3,15 @@
  * Description :            the class for the game
  * Author :                 Cédric Jankiewicz
  * Creation date :          4.03.2026
- * Modified by :            Cédric Jankiewicz
- * Modification date :      24.03.2026
- * Version :                0.1.5
+ * Modified by :            Thierry Perroud
+ * Modification date :      25.03.2026
+ * Version :                0.1.6
  **********************************************************************************************************************/
 "use strict";
 import Player from "./player.js";
 import Tile from "./tile.js";
 import objects from "../object.js";
+
 
 
 export default class Game {
@@ -26,6 +27,7 @@ export default class Game {
         this.players = [];
         this.board = [];
         this.current_player = 0;
+        this.nb_doubles = 0;
 
         /**
          * List of currently possible actions for the player.
@@ -93,7 +95,7 @@ export default class Game {
      * @returns {void}
      */
     getPossibleActions(player_index) {
-        this.possible_actions = [];
+        this.possible_actions = ["dice"];
         let player = this.players[player_index];
 
         if (player.in_prison) {
@@ -121,6 +123,7 @@ export default class Game {
             if (!this.players[this.current_player].bankrupt) {cant_play = false}
         }
         this.getPossibleActions(this.current_player);
+        this.nb_doubles = 0;
         this.possible_actions.push("dice");
     }
 
@@ -131,12 +134,34 @@ export default class Game {
      * @returns {void}
      */
     throwTheDice(dice_1, dice_2) {
-        this.players[this.current_player].move(dice_1 + dice_2);
-        if (dice_1 !== dice_2) {
-            this.possible_actions = this.possible_actions.filter(action => action !== "dice");
+        let can_rethrow = true;
+
+        if (!this.players[this.current_player].in_prison) {
+            this.players[this.current_player].move(dice_1 + dice_2);
+        }
+
+        if (dice_1 !== dice_2 || this.nb_doubles > 2) {    // No doubles or 3 doubles
+            if (this.players[this.current_player].in_prison) {
+                this.players[this.current_player].blockedTurns--;
+                if (this.players[this.current_player].blockedTurns === 0) { // 3 misses in prison is a fine of 200$
+                    this.players[this.current_player].releaseFromPrison();
+                    this.players[this.current_player].removeMoney(200);
+                }
+            }
+
+            if (this.nb_doubles > 2) this.players[this.current_player].putInPrison(); // put in prison if 3 doubles
+            can_rethrow = false;
+        }
+        else {                                              // Doubles
+            if (this.players[this.current_player].in_prison) {
+                this.goOutOfPrison()
+                can_rethrow = false;
+            }
+            else this.nb_doubles++;
         }
 
         this.getPossibleActions(this.current_player);
+        if (!can_rethrow) this.possible_actions = this.possible_actions.filter(action => action !== "dice");
     }
 
     /**

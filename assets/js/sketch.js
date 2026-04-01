@@ -1,5 +1,6 @@
 "use strict";
 import Dice from "./class/dice.js";
+
 const StreetsColors = {
     "brown": "#8c3916",
     "cyan": "#b9f1fb",
@@ -10,7 +11,6 @@ const StreetsColors = {
     "green": "#14a14a",
     "blue": "#3982e4"
 }
-
 
 // variables globales
 let pawns = [];
@@ -24,7 +24,6 @@ let dice_2;
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
 let roll_btn, finish_btn, jail_btn, buy_btn, exchange_btn, sell_btn, build_btn;
-
 
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
@@ -178,6 +177,7 @@ function rollTheDices(dice_1, dice_2) {
         dice_2.rollDice(20, checkEnd);
     });
 }
+
 function getOffsetForPlayer(playerIndex) {
     let sameCase = 0;
     for (let j = 0; j < playerIndex; j++) {
@@ -228,9 +228,9 @@ window.setup = function() {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
         inventory_btn.mousePressed(() => {
-                inventoryPopup(i, `Inventaire du joueur ${i + 1}`);
+            inventoryPopup(i, `Inventaire du joueur ${i + 1}`);
         });
-         // Store a reference
+        // Store a reference
         inventoryBtns.push(inventory_btn);
     }
     

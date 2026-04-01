@@ -25,6 +25,7 @@ export default class Player {
         this.inventory = inventory;      // Owned items/properties
         this.in_prison = in_prison;   // Prison status
         this.bankrupt = in_bankrupt;  // bankrupt status
+        this.blockedTurns = 0; // nombre de tours restants bloqués
     }
 
     /**
@@ -91,6 +92,7 @@ export default class Player {
      */
     putInPrison() {
         this.in_prison = true;
+        this.blockedTurns = 3; // bloqué pendant 3 tours
         this.bringTo(10);
     }
 
@@ -99,6 +101,7 @@ export default class Player {
      */
     releaseFromPrison() {
         this.in_prison = false;
+        this.blockedTurns = 0;
     }
 
     /**

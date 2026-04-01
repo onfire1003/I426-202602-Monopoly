@@ -98,7 +98,7 @@ export default class Game {
             this.possible_actions.push("trade", "sell", "build");
         }
 
-        if (this.board[player.placement].object && !this.board[player.placement].owned &&
+        if (this.board[player.placement].object && this.board[player.placement].ownedby === -1 &&
             this.board[player.placement].object.price <= player.money) {
             this.possible_actions.push("buy");
         }
@@ -190,7 +190,9 @@ export default class Game {
         this.players[this.current_player].addMoney(this.board[tile_index].object.mortgage);
         let inv_index = this.players[this.current_player].inventory.indexOf(this.board[tile_index].object);
         this.players[this.current_player].removeFromInventory(inv_index);
+        console.log(this.board[tile_index]);
         this.board[tile_index].ownedby = -1;
+        console.log(this.board[tile_index]);
     }
 
     /**

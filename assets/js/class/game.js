@@ -125,7 +125,6 @@ export default class Game {
         }
         this.getPossibleActions(this.current_player);
         this.nb_doubles = 0;
-        this.possible_actions.push("dice");
     }
 
     /**
@@ -185,6 +184,7 @@ export default class Game {
 
         // Mettre à jour les actions
         this.getPossibleActions(this.current_player);
+        this.possible_actions = this.possible_actions.filter(action => action !== "dice");
     }
 
     /**

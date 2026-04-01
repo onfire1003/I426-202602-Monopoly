@@ -37,7 +37,7 @@ const companies = [
     { id: 3, name: "Gare Saint-Lazare", type: "station", price: 200, rent: 25 },
 
     { id: 4, name: "Compagnie de l'Électricité", type: "company", price: 150, rent: 4 },
-    { id: 5, name: "Compagnie des Eaux", type: "company", price: 150, rent: 10 }
+    { id: 5, name: "Compagnie des Eaux", type: "company", price: 150, rent:4 }
 ];
 
 const consumables = new Set([

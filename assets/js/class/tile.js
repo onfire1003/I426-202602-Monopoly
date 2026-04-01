@@ -27,14 +27,4 @@ export default class Tile {
         this.coords = coords;
         this.ownedby = ownedby;
     }
-    getRent(p1, p2){
-        switch(this.type){
-            case "station":
-                this.object.rent
-
-            case "company":
-                pass
-            default:
-        }
-    }
 }

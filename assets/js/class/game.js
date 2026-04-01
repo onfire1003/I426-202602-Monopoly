@@ -199,4 +199,29 @@ export default class Game {
 
         }
     }
+    getRent(player_index, owner_index, tile_index, dice_value) {
+        let count;
+        switch(this.board[tile_index].type) {
+            case "station":
+                count = 0;
+                for (let i = 0; i < this.players[owner_index].inventory; i++) {
+                    if (this.players[owner_index].inventory[i] === "station") {
+                        count++;
+                    }
+                }
+                return this.board[tile_index].object.rent * count
+            case "company":
+                count = 0;
+                for (let i = 0; i < this.players[owner_index].inventory; i++) {
+                    if (this.players[owner_index].inventory[i] === "company") {
+                        count++;
+                    }
+                }
+                let mult;
+                if (count === 1) {mult = 4} else {mult = 10}
+                return this.board[tile_index].object.rent * mult
+            default:
+                return this.board[tile_index].object.rent;
+        }
+    }
 }

@@ -164,14 +164,12 @@ function mortgagePopup(id, title) {
 
     const inv = game.players[game.current_player].inventory;
 
-    // 🟦 TRI PAR ID
     const sorted = [...inv].sort((a, b) => {
         const idA = typeof a === "string" ? 9999 : a.id ?? 9999;
         const idB = typeof b === "string" ? 9999 : b.id ?? 9999;
         return idA - idB;
     });
 
-    // 🏷️ LISTES PAR CATEGORIES
     let streetsList = [];
     let railroadsList = [];
     let utilitiesList = [];
@@ -422,6 +420,7 @@ window.setup = function() {
 }
 
 window.draw = function() {
+    background('bisque');
     //draw users zones
     //draw background players
     for (let i = 0; i < (window.game.nb_player); i++) {

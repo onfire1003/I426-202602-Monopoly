@@ -261,6 +261,7 @@ window.setup = function() {
     roll_btn.position(1170, 700);
 
     roll_btn.mousePressed(async () => {
+        roll_btn.attribute("disabled", "");
         const result = await throwTheDices(dice_1, dice_2);
         console.log(result);
         game.throwTheDice(result.dice1, result.dice2);
@@ -268,6 +269,7 @@ window.setup = function() {
         if (game.players[game.current_player].placement === 30) {
             game.players[game.current_player].putInPrison();
         }
+        roll_btn.removeAttribute("disabled");
     });
 
     // button finish turn

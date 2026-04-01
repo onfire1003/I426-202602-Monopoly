@@ -1,5 +1,6 @@
 "use strict";
 import Dice from "./class/dice.js";
+
 const StreetsColors = {
     "brown": "#8c3916",
     "cyan": "#b9f1fb",
@@ -35,7 +36,6 @@ let dice_2;
 // on garde les références des boutons si besoin
 let inventoryBtns = [];
 let roll_btn, finish_btn, jail_btn, buy_btn, exchange_btn, sell_btn, build_btn;
-
 
 // ---------------- Style ----------------
 function addGlobalButtonStyle() {
@@ -146,6 +146,109 @@ function inventoryPopup(id, title) {
     });
 }
 
+
+function mortgagePopup(id, title) {
+    // fermer si ouvert
+    const old = document.getElementById(`mortgage-${id}`);
+    if (old) old.remove();
+
+    const bg = createDiv('')
+        .id(`mortgage-${id}`)
+        .addClass('inventory-overlay');
+
+    const popup = createDiv('').addClass('mortgage-popup');
+    popup.parent(bg);
+
+    createElement('h2', title).parent(popup);
+
+    const inv = game.players[game.current_player].inventory;
+
+    // 🟦 TRI PAR ID
+    const sorted = [...inv].sort((a, b) => {
+        const idA = typeof a === "string" ? 9999 : a.id ?? 9999;
+        const idB = typeof b === "string" ? 9999 : b.id ?? 9999;
+        return idA - idB;
+    });
+
+    // 🏷️ LISTES PAR CATEGORIES
+    let streetsList = [];
+    let railroadsList = [];
+    let utilitiesList = [];
+
+    sorted.forEach(item => {
+        if (typeof item === "string") return;
+
+        if (item.type === "railroad") {
+            railroadsList.push({
+                label: `${item.name} — ${item.mortgage}$ `,
+                id: item.id
+            });
+        } else if (item.type === "utility") {
+            utilitiesList.push({
+                label: `${item.name} — ${item.mortgage}$ `,
+                id: item.id
+            });
+        } else if (item.color) {
+            streetsList.push({
+                label: `${item.name} (${item.color}) — ${item.mortgage}$ `,
+                id: item.id
+            });
+        }
+    });
+
+    function addSection(title, list, parent) {
+        const section = createDiv('').addClass('inv-section');
+        section.parent(parent);
+
+        createElement('h3', title).parent(section);
+
+        if (!list.length) {
+            createElement('i', 'Aucune').parent(section);
+            return;
+        }
+
+        list.forEach(item => {
+            const row = createDiv('').addClass('inv-row');
+            row.parent(section);
+
+            // texte
+            createSpan(item.label).parent(row);
+
+            // bouton
+            const btn = createButton(
+                'Hypothéquer'
+            );
+            btn.addClass('inventory-btn');
+            btn.parent(row);
+
+            btn.mousePressed(() => {
+                game.sell(item.id)
+
+                // refresh popup
+                bg.remove();
+                mortgagePopup(id, title);
+            });
+        });
+    }
+
+    const content = createDiv('').addClass('inventory-content');
+    content.parent(popup);
+
+    addSection('🏠 Propriétés', streetsList, content);
+    addSection('🚆 Gares', railroadsList, content);
+    addSection('⚡ Compagnies', utilitiesList, content);
+
+    const closeBtn = createButton('Fermer');
+    closeBtn.addClass('inventory-close');
+    closeBtn.parent(popup);
+    closeBtn.mousePressed(() => bg.remove());
+
+    bg.mousePressed((e) => {
+        if (e.target.classList.contains('inventory-overlay')) bg.remove();
+    });
+}
+
+
 async function throwTheDices(dice_1, dice_2) {
     return await rollTheDices(dice_1, dice_2);
 }
@@ -189,6 +292,7 @@ function rollTheDices(dice_1, dice_2) {
         dice_2.rollDice(20, checkEnd);
     });
 }
+
 function getOffsetForPlayer(playerIndex) {
     let sameCase = 0;
     for (let j = 0; j < playerIndex; j++) {
@@ -230,6 +334,7 @@ window.setup = function() {
 
     dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
     dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
+
     addGlobalButtonStyle()
     let n = window.game.nb_player || 0;
 
@@ -239,9 +344,9 @@ window.setup = function() {
         const inventory_btn = createButton('Inventaire');
         inventory_btn.position(625, 75 + (i * 95));
         inventory_btn.mousePressed(() => {
-                inventoryPopup(i, `Inventaire du joueur ${i + 1}`);
+            inventoryPopup(i, `Inventaire du joueur ${i + 1}`);
         });
-         // Store a reference
+        // Store a reference
         inventoryBtns.push(inventory_btn);
     }
     
@@ -262,7 +367,7 @@ window.setup = function() {
     sell_btn = createButton('Vendre');
     sell_btn.position(660, 850);
     sell_btn.mousePressed(() => {
-        game.sell();
+        mortgagePopup();
     });
 
     // button board game
@@ -271,6 +376,7 @@ window.setup = function() {
     roll_btn.position(1170, 700);
 
     roll_btn.mousePressed(async () => {
+        roll_btn.attribute("disabled", "");
         const result = await throwTheDices(dice_1, dice_2);
         console.log(result);
         game.throwTheDice(result.dice1, result.dice2);
@@ -280,6 +386,7 @@ window.setup = function() {
         }
 
         game.checkRent(result.dice1 + result.dice2);
+        roll_btn.removeAttribute("disabled");
     });
 
     // button finish turn
@@ -539,6 +646,18 @@ window.draw = function() {
 
     dice_1.displayDice();
     dice_2.displayDice();
+
+    // Displays when rolling a double
+    if(window.game.nb_doubles > 0 && dice_1.finalValue === dice_2.finalValue) {
+        push();
+        textSize(32);
+        fill("white");
+        textAlign(CENTER);
+        translate(1450, 625);
+        text('DÉ DOUBLE !', 0, 0);
+        pop();
+    }
+
     drawPawnsOnBoard();
 }
 

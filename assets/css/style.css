@@ -278,6 +278,17 @@ body.no-scroll {
     background: rgba(255,255,255,0.25);
 }
 
+.mortgage-popup {
+    background: #242424;
+    color: white;
+    padding: 22px;
+    width: min(520px, 92vw);
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    animation: popup-appear 0.2s ease-out forwards;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
 /* Animation */
 @keyframes popup-appear {
     from { transform: translateY(20px); opacity: 0; }

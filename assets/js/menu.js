@@ -43,8 +43,7 @@ btnStart.addEventListener("click", () => {
     window.game = new Game(nb);
 
 
-
-    // 🔒 Lock permanently for this run
+    // Lock permanently for this run
     window.playersLocked = true;
     lockPlayersUI(true);
 

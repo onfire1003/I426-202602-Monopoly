@@ -11,6 +11,17 @@ const StreetsColors = {
     "blue": "#3982e4"
 }
 
+const PlayersColors = {
+    0 : "#de1c1c",
+    1 : "#e8ee3a",
+    2 : "#14a14a",
+    3 : "#55FEFE",
+    4 : "#f0a933",
+    5 : "#f241a2",
+    6 : "#8c3916",
+    7 : "#3982e4"
+}
+
 
 // variables globales
 let pawns = [];
@@ -424,23 +435,6 @@ window.draw = function() {
             if (window.game.board[i].object) {
                 // right
                 if (i > 30) {
-
-                }
-                // top
-                else if (i > 20) {
-
-                }
-                // left
-                else if (i > 10) {
-
-                }
-                // bottom
-                else {
-
-
-                }
-                // right
-                if (i > 30) {
                     push();
                     textAlign(LEFT);
                     translate(1845, 128 + ((i - 30) * 75)); // 126 + 2
@@ -493,6 +487,12 @@ window.draw = function() {
                     pop();
                     text(window.game.board[i].object.price, 1815 + (-i * 75), 905)
                 }
+
+                let tile = window.game.board[i];
+                if (tile.ownedby !== null && tile.ownedby >= 0) {
+                    drawOwnerTriangle(i, tile.coords.x, tile.coords.y, tile.ownedby);
+                }
+
             }
             textSize(14);
             textAlign(CENTER);
@@ -550,4 +550,44 @@ function drawPawnsOnBoard() {
             image(pawns[i], coords.x + offset.x, coords.y + offset.y, 32, 32);
         }
     }
+}
+
+function drawOwnerTriangle(i, x, y, owner) {
+    if (owner == null || owner < 0) return;
+
+    push();
+    rotate(0);
+    fill(PlayersColors[owner]);
+    stroke('black');
+
+    if (i <= 9) {
+        triangle(
+            x + 13 , y + 107,
+            x + 23, y + 107,
+            x + 17, y + 93
+        );
+    }
+    else if (i <= 20) {
+        triangle(
+            x - 35, y + 37 ,
+            x - 35, y + 27,
+            x  - 20, y + 32
+        );
+    }
+    else if (i <= 30) {
+        triangle(
+            x + 22, y - 35,
+            x + 17, y - 21,
+            x + 12, y - 35
+        );
+    }
+    else {
+        triangle(
+            x + 88, y + 20,
+            x + 75, y + 25,
+            x + 88, y + 30
+        );
+    }
+
+    pop();
 }

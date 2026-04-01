@@ -17,14 +17,24 @@ export default class Tile {
      * @param action the action done when landed on the tile
      * @param object
      * @param coords tile coordonate
-     * @param.owned
+     * @param.ownedby
      */
-    constructor(type, name, object, action, coords = { x: 0, y: 0 }){
+    constructor(type, name, object, action, coords = { x: 0, y: 0 }, ownedby = -1){
         this.type = type;
         this.name = name;
         this.object= object;
         this.action = action;
         this.coords = coords;
-        this.ownedby = -1;
+        this.ownedby = ownedby;
+    }
+    getRent(p1, p2){
+        switch(this.type){
+            case "station":
+                this.object.rent
+
+            case "company":
+                pass
+            default:
+        }
     }
 }

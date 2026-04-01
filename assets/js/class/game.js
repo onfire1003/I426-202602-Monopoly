@@ -38,7 +38,6 @@ export default class Game {
             this.players.push(new Player());
         }
 
-
         const TilesType = [
             "start", "brown", "community", "brown", "tax", "station", "cyan", "luck", "cyan", "cyan",
             "prison", "magenta", "company", "magenta", "magenta", "station", "orange", "community", "orange", "orange",
@@ -51,13 +50,6 @@ export default class Game {
             null, objects.streets[5], objects.companies[4], objects.streets[6], objects.streets[7], objects.companies[1], objects.streets[8], null, objects.streets[9], objects.streets[10],
             null, objects.streets[11], null, objects.streets[12], objects.streets[13], objects.companies[2], objects.streets[14], objects.streets[15], objects.companies[5], objects.streets[16],
             null, objects.streets[17], objects.streets[18], null, objects.streets[19], objects.companies[3], null, objects.streets[20], null, objects.streets[21]
-        ]
-
-        const TilesPrice = [
-            0, 100, 0, 100, 0, 100, 100, 0, 100, 100,
-            0, 100, 100, 100, 100, 100, 100, 0, 100, 100,
-            0, 100, 0, 100, 100, 100, 100, 100, 100, 100,
-            0, 100, 100, 0, 100, 100, 0, 100, 0, 100,
         ]
 
         const TilesName = [
@@ -104,7 +96,7 @@ export default class Game {
             this.possible_actions.push("trade", "sell", "build");
         }
 
-        if (this.board[player.placement].object && 0 <= this.board[player.placement].ownedby) {
+        if (this.board[player.placement].object && this.board[player.placement].ownedby === -1) {
             this.possible_actions.push("buy");
         }
     }
@@ -198,5 +190,13 @@ export default class Game {
     goOutOfPrison() {
         this.players[this.current_player].releaseFromPrison();
         console.log(this.players[this.current_player].in_prison);
+    }
+
+    checkRent() {
+        let tile = game.board[game.players[this.current_player].placement]
+        if (tile.ownedby !== -1 && tile.ownedby !== this.current_player) {
+
+
+        }
     }
 }

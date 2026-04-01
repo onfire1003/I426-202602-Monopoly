@@ -145,7 +145,7 @@ function mortgagePopup(id, title) {
         .id(`mortgage-${id}`)
         .addClass('inventory-overlay');
 
-    const popup = createDiv('').addClass('inventory-popup');
+    const popup = createDiv('').addClass('mortgage-popup');
     popup.parent(bg);
 
     createElement('h2', title).parent(popup);
@@ -169,17 +169,17 @@ function mortgagePopup(id, title) {
 
         if (item.type === "railroad") {
             railroadsList.push({
-                label: `${item.name} — ${item.mortgage}$`,
+                label: `${item.name} — ${item.mortgage}$ `,
                 id: item.id
             });
         } else if (item.type === "utility") {
             utilitiesList.push({
-                label: `${item.name} — ${item.mortgage}$`,
+                label: `${item.name} — ${item.mortgage}$ `,
                 id: item.id
             });
         } else if (item.color) {
             streetsList.push({
-                label: `${item.name} (${item.color}) — ${item.mortgage}$`,
+                label: `${item.name} (${item.color}) — ${item.mortgage}$ `,
                 id: item.id
             });
         }

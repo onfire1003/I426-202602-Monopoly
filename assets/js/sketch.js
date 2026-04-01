@@ -219,6 +219,7 @@ window.setup = function() {
 
     dice_1 = new Dice(diceImages, [1325, 430, 100, 100]);
     dice_2 = new Dice(diceImages, [1475, 430, 100, 100]);
+
     addGlobalButtonStyle()
     let n = window.game.nb_player || 0;
 
@@ -520,6 +521,18 @@ window.draw = function() {
 
     dice_1.displayDice();
     dice_2.displayDice();
+
+    // Displays when rolling a double
+    if(window.game.nb_doubles > 0 && dice_1.finalValue === dice_2.finalValue) {
+        push();
+        textSize(32);
+        fill("white");
+        textAlign(CENTER);
+        translate(1450, 625);
+        text('DÉ DOUBLE !', 0, 0);
+        pop();
+    }
+
     drawPawnsOnBoard();
 }
 

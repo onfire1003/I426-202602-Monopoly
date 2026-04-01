@@ -134,6 +134,109 @@ function inventoryPopup(id, title) {
     });
 }
 
+
+function mortgagePopup(id, title) {
+    // fermer si ouvert
+    const old = document.getElementById(`mortgage-${id}`);
+    if (old) old.remove();
+
+    const bg = createDiv('')
+        .id(`mortgage-${id}`)
+        .addClass('inventory-overlay');
+
+    const popup = createDiv('').addClass('mortgage-popup');
+    popup.parent(bg);
+
+    createElement('h2', title).parent(popup);
+
+    const inv = game.players[game.current_player].inventory;
+
+    // 🟦 TRI PAR ID
+    const sorted = [...inv].sort((a, b) => {
+        const idA = typeof a === "string" ? 9999 : a.id ?? 9999;
+        const idB = typeof b === "string" ? 9999 : b.id ?? 9999;
+        return idA - idB;
+    });
+
+    // 🏷️ LISTES PAR CATEGORIES
+    let streetsList = [];
+    let railroadsList = [];
+    let utilitiesList = [];
+
+    sorted.forEach(item => {
+        if (typeof item === "string") return;
+
+        if (item.type === "railroad") {
+            railroadsList.push({
+                label: `${item.name} — ${item.mortgage}$ `,
+                id: item.id
+            });
+        } else if (item.type === "utility") {
+            utilitiesList.push({
+                label: `${item.name} — ${item.mortgage}$ `,
+                id: item.id
+            });
+        } else if (item.color) {
+            streetsList.push({
+                label: `${item.name} (${item.color}) — ${item.mortgage}$ `,
+                id: item.id
+            });
+        }
+    });
+
+    function addSection(title, list, parent) {
+        const section = createDiv('').addClass('inv-section');
+        section.parent(parent);
+
+        createElement('h3', title).parent(section);
+
+        if (!list.length) {
+            createElement('i', 'Aucune').parent(section);
+            return;
+        }
+
+        list.forEach(item => {
+            const row = createDiv('').addClass('inv-row');
+            row.parent(section);
+
+            // texte
+            createSpan(item.label).parent(row);
+
+            // bouton
+            const btn = createButton(
+                'Hypothéquer'
+            );
+            btn.addClass('inventory-btn');
+            btn.parent(row);
+
+            btn.mousePressed(() => {
+                game.sell(item.id)
+
+                // refresh popup
+                bg.remove();
+                mortgagePopup(id, title);
+            });
+        });
+    }
+
+    const content = createDiv('').addClass('inventory-content');
+    content.parent(popup);
+
+    addSection('🏠 Propriétés', streetsList, content);
+    addSection('🚆 Gares', railroadsList, content);
+    addSection('⚡ Compagnies', utilitiesList, content);
+
+    const closeBtn = createButton('Fermer');
+    closeBtn.addClass('inventory-close');
+    closeBtn.parent(popup);
+    closeBtn.mousePressed(() => bg.remove());
+
+    bg.mousePressed((e) => {
+        if (e.target.classList.contains('inventory-overlay')) bg.remove();
+    });
+}
+
+
 async function throwTheDices(dice_1, dice_2) {
     return await rollTheDices(dice_1, dice_2);
 }
@@ -252,7 +355,7 @@ window.setup = function() {
     sell_btn = createButton('Vendre');
     sell_btn.position(660, 850);
     sell_btn.mousePressed(() => {
-        game.sell();
+        mortgagePopup();
     });
 
     // button board game

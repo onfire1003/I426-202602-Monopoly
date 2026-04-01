@@ -192,14 +192,20 @@ export default class Game {
         console.log(this.players[this.current_player].in_prison);
     }
 
-    checkRent() {
+    checkRent(dice_value) {
         let tile = game.board[game.players[this.current_player].placement]
         if (tile.ownedby !== -1 && tile.ownedby !== this.current_player) {
-
-
+            let rent = this.getRent(tile.ownedby, game.players[this.current_player].placement, dice_value);
+            let result = this.players[this.current_player].removeMoney(rent);
+            if (result) {
+                this.players[tile.ownedby].addMoney(rent);
+                console.log(rent);
+            } else {
+                this.players[this.current_player].bankrupt = true;
+            }
         }
     }
-    getRent(player_index, owner_index, tile_index, dice_value) {
+    getRent(owner_index, tile_index, dice_value) {
         let count;
         switch(this.board[tile_index].type) {
             case "station":
@@ -219,7 +225,7 @@ export default class Game {
                 }
                 let mult;
                 if (count === 1) {mult = 4} else {mult = 10}
-                return this.board[tile_index].object.rent * mult
+                return dice_value * mult
             default:
                 return this.board[tile_index].object.rent;
         }

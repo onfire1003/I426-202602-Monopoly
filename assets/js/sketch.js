@@ -278,6 +278,8 @@ window.setup = function() {
         if (game.players[game.current_player].placement === 30) {
             game.players[game.current_player].putInPrison();
         }
+
+        game.checkRent(result.dice1 + result.dice2);
     });
 
     // button finish turn

@@ -192,6 +192,11 @@ export default class Game {
         console.log(this.players[this.current_player].in_prison);
     }
 
+    /**
+     * do the rent transaction, if the player don't have enough money their eliminated
+     *
+     * @param dice_value the value of both dice
+     */
     checkRent(dice_value) {
         let tile = game.board[game.players[this.current_player].placement]
         if (tile.ownedby !== -1 && tile.ownedby !== this.current_player) {
@@ -205,6 +210,15 @@ export default class Game {
             }
         }
     }
+
+    /**
+     * get the rent amount
+     *
+     * @param owner_index the owner of the tile
+     * @param tile_index the tile the player is on
+     * @param dice_value the value of the dice
+     * @returns {*|number} the rent to pay
+     */
     getRent(owner_index, tile_index, dice_value) {
         let count;
         switch(this.board[tile_index].type) {
